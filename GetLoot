@@ -1,0 +1,74 @@
+package com.example.rafal.gra;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class GetLoot {
+
+    public static String[] items;
+    public static String[] chances;
+    public static String[] ids;
+    public static String[] images;
+    public static String[] types;
+    public static String[] descriptions;
+    public static String[] weights;
+    public static String[] quantities;
+
+    public static final String JSON_ARRAY = "result";
+    public static final String KEY_NAME = "name";
+    public static final String KEY_RARITY_CHANCES = "rarity_chances";
+    public static final String KEY_ID_ITEM = "id_item";
+    public static final String KEY_IMAGE = "image";
+    public static final String KEY_TYPE = "type";
+    public static final String KEY_DESCRIPTION = "description";
+    public static final String KEY_WEIGHT = "weight";
+    public static final String KEY_QUANTITY = "quantity";
+
+    private JSONArray loot = null;
+
+    private String json;
+
+    public GetLoot(String json){
+
+        this.json = json;
+
+    }
+
+    protected void GetLoot(){
+
+        JSONObject jsonObject=null;
+
+        try {
+            jsonObject = new JSONObject(json);
+            loot = jsonObject.getJSONArray(JSON_ARRAY);
+
+            items = new String[loot.length()];
+            chances = new String[loot.length()];
+            ids = new String[loot.length()];
+            images = new String[loot.length()];
+            types = new String[loot.length()];
+            descriptions = new String[loot.length()];
+            weights = new String[loot.length()];
+            quantities = new String[loot.length()];
+
+            for(int i=0;i<loot.length();i++){
+                JSONObject jo = loot.getJSONObject(i);
+                items[i] = jo.getString(KEY_NAME);
+                chances[i] = jo.getString(KEY_RARITY_CHANCES);
+                ids[i] = jo.getString(KEY_ID_ITEM);
+                images[i] = jo.getString(KEY_IMAGE);
+                types[i] = jo.getString(KEY_TYPE);
+                descriptions[i] = jo.getString(KEY_DESCRIPTION);
+                weights[i] = jo.getString(KEY_WEIGHT);
+                quantities[i] = jo.getString(KEY_QUANTITY);
+
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+}
