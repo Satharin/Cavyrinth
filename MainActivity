@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
             player_skill_points, player_magic_experience, tempLoggedIn;
             
     int test_github;
+    boolean github=true;
 
     int player_eq_helmet, player_eq_armor, player_eq_legs, player_eq_boots, player_eq_weapon,
             player_eq_shield, player_eq_ring_left, player_eq_ring_right, player_eq_amulet;
