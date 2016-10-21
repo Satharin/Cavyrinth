@@ -1,0 +1,10 @@
+package com.example.rafal.gra;
+
+public class ConfigLogin {
+
+    public static final String DATA_URL = "http://testcase.net23.net/getPlayer.php?name=";
+    public static final String KEY_NAME = "name";
+    public static final String KEY_PASSWORD = "password";
+    public static final String JSON_ARRAY = "result";
+
+}
