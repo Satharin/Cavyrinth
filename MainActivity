@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     int player_hp, player_mp, player_level, player_magic_level, player_experience, player_gold,
             player_capacity, player_attack, player_defence, player_critical, player_critical_chance,
             player_skill_points, player_magic_experience, tempLoggedIn;
+            
+    int test_github;
 
     int player_eq_helmet, player_eq_armor, player_eq_legs, player_eq_boots, player_eq_weapon,
             player_eq_shield, player_eq_ring_left, player_eq_ring_right, player_eq_amulet;
