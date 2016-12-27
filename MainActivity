@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         }else {
             Toast.makeText(MainActivity.this,"No network connection.", Toast.LENGTH_LONG).show();
         }
-
+        
     }
 
     //Check if player really wants to leave the game
@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                     .create();
             exit.show();
 
-        }else {
+        }else{
 
             AlertDialog.Builder exit = new AlertDialog.Builder(this);
 
