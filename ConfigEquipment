@@ -44,7 +44,6 @@ public class ConfigEquipment {
                 ids[i] = jo.getString(KEY_ID_ITEM);
                 images[i] = jo.getString(KEY_IMAGE);
                 descriptions[i] = jo.getString(KEY_DESCRIPTION);
-
             }
 
         }catch(JSONException e){
