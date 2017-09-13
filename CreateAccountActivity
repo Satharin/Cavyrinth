@@ -279,7 +279,6 @@ public class CreateAccountActivity extends AppCompatActivity {
         SharedPreferences.Editor save = saveGame.edit();
         save.putString("player_name", name);
         save.apply();
-
     }
 
 }
