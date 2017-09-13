@@ -80,7 +80,6 @@ public class PolujActivity extends AppCompatActivity {
 
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
         finish();
-
     }
 
 }
