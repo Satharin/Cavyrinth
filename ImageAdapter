@@ -116,7 +116,6 @@ public class ImageAdapter extends BaseAdapter{
             texts[position] = text;
             notifyDataSetChanged();
         }
-
     }
 
 }
