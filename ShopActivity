@@ -447,7 +447,6 @@ public class ShopActivity extends AppCompatActivity {
         };
 
         requestQueue.add(request);
-
     }
 
 }
