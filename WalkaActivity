@@ -1495,7 +1495,6 @@ public class WalkaActivity extends AppCompatActivity {
 
         check_id_player = playerId;
         check_quantity = Integer.parseInt(quantity2);
-
     }
 
 }
