@@ -13,7 +13,6 @@ public class Monsters {
         this.def = def;
         this.exp = exp;
         this.goldMax = goldMax;
-
     }
 
 }
