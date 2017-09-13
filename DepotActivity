@@ -899,7 +899,6 @@ public class DepotActivity extends AppCompatActivity{
         SharedPreferences loadE = getSharedPreferences("Save", MODE_PRIVATE);
         id_player = loadE.getString("id_player", "");
         player_name = loadE.getString("player_name", "");
-
     }
 
 }
