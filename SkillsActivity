@@ -607,7 +607,6 @@ public class SkillsActivity extends AppCompatActivity {
         };
 
         requestQueue.add(request);
-
     }
 
 }
