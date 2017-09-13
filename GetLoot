@@ -62,7 +62,6 @@ public class GetLoot {
                 descriptions[i] = jo.getString(KEY_DESCRIPTION);
                 weights[i] = jo.getString(KEY_WEIGHT);
                 quantities[i] = jo.getString(KEY_QUANTITY);
-
             }
 
         } catch (JSONException e) {
