@@ -68,5 +68,4 @@ public class ItemShield {
     public double getWeight() {
         return weight;
     }
-
 }
