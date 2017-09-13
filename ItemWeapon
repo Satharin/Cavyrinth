@@ -77,5 +77,4 @@ public class ItemWeapon {
     public double getWeight() {
         return weight;
     }
-
 }
