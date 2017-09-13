@@ -11,5 +11,4 @@ public class ConfigGetItemArmorStats {
     public static final String KEY_BONUS = "bonus";
     public static final String KEY_WEIGHT = "weight";
     public static final String JSON_ARRAY = "result";
-
 }
