@@ -2578,7 +2578,6 @@ public class EquipmentActivity extends AppCompatActivity {
         requestQueue.add(request);
         wait = false;
 
-
     }
 
 
