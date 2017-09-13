@@ -36,6 +36,5 @@ public class ConfigPlayerID {
     public static final String KEY_HEALTH_POTIONS = "health_potions";
     public static final String KEY_MANA_POTIONS = "mana_potions";
     public static final String JSON_ARRAY = "result";
-
 }
 
