@@ -11,5 +11,4 @@ public class ConfigMonster {
     public static final String KEY_GOLD_MAX = "gold_max";
     public static final String KEY_IMAGE = "image";
     public static final String JSON_ARRAY = "result";
-
 }
