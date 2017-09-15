@@ -3,12 +3,14 @@ package com.example.rafal.gra;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -46,15 +48,12 @@ public class DepotActivity extends AppCompatActivity{
 
     int imageID, quant, player_gold, imageNumber;
 
-    private Button weaponButton, shieldButton, armorButton, jewelleryButton, craftButton, otherButton,
-                    backButton, allButton;
+    boolean check = true, longClick = false;
 
-    boolean checkIfTypeExist = true, longClick = false;
-
-    public static final String DATA_URL = "http://testcase.net23.net/getDepotByType.php?id=";
-    public static final String URL_SAVE_SKILLS = "http://testcase.net23.net/saveGold.php";
-    public static final String URL_DELETE_ITEM = "http://testcase.net23.net/deleteSoldItem.php?id_player=";
-    public static final String URL_UPDATE_QUANTITY = "http://testcase.net23.net/updateQuantity.php";
+    public static final String DATA_URL = "https://mundial2018.000webhostapp.com/getDepotByType.php?id=";
+    public static final String URL_SAVE_SKILLS = "https://mundial2018.000webhostapp.com/saveGold.php";
+    public static final String URL_DELETE_ITEM = "https://mundial2018.000webhostapp.com/deleteSoldItem.php?id_player=";
+    public static final String URL_UPDATE_QUANTITY = "https://mundial2018.000webhostapp.com/updateQuantity.php";
 
     RequestQueue requestQueue;
 
@@ -64,26 +63,6 @@ public class DepotActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_depot);
 
-        weaponButton = (Button) findViewById(R.id.shield);
-        shieldButton = (Button) findViewById(R.id.weapon);
-        armorButton = (Button) findViewById(R.id.armor);
-        jewelleryButton = (Button) findViewById(R.id.craft);
-        craftButton = (Button) findViewById(R.id.jewellery);
-        otherButton = (Button) findViewById(R.id.other);
-        backButton = (Button) findViewById(R.id.exit);
-        allButton = (Button) findViewById(R.id.all);
-
-        //Change font on buttons
-        Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-        weaponButton.setTypeface(type);
-        shieldButton.setTypeface(type);
-        armorButton.setTypeface(type);
-        jewelleryButton.setTypeface(type);
-        craftButton.setTypeface(type);
-        otherButton.setTypeface(type);
-        backButton.setTypeface(type);
-        allButton.setTypeface(type);
-
         requestQueue = Volley.newRequestQueue(getApplicationContext());
 
         final GridView grid = (GridView) findViewById(R.id.depo);
@@ -91,46 +70,33 @@ public class DepotActivity extends AppCompatActivity{
 
         loadGame();
 
-        //Get player ID
         getPlayerId();
 
-        //Get player's depot
         getAll(id_player);
 
-        //Items descriptions after long tap
+
         grid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int position, long arg3) {
 
-                //Action if item is clicked (not empty slot)
                 if(!ConfigDepot.images[0].equals("null") && ((ImageAdapter) grid.getAdapter()).checkImage(position)!=R.mipmap.empty) {
+                    final Dialog dialog2 = new Dialog(DepotActivity.this);
+                    dialog2.setTitle("Sell");
+                    dialog2.setContentView(R.layout.popup_sell_from_depot);
+                    dialog2.show();
+                    dialog2.setCancelable(false);
+                    dialog2.setCanceledOnTouchOutside(false);
 
-                    final Dialog clickedItem = new Dialog(DepotActivity.this);
-                    clickedItem.setContentView(R.layout.popup_sell_from_depot);
-                    clickedItem.show();
-                    //To prevent from closing dialog by tapping outside its area
-                    clickedItem.setCancelable(false);
-                    clickedItem.setCanceledOnTouchOutside(false);
-
-                    //Variable set to prevent displaying toast from short click on item
                     longClick = true;
 
-                    //Set buttons on dialog
-                    Button sell = (Button) clickedItem.findViewById(R.id.sell);
-                    Button back = (Button) clickedItem.findViewById(R.id.back);
+                    Button sell = (Button) dialog2.findViewById(R.id.sell);
+                    Button back = (Button) dialog2.findViewById(R.id.back);
 
-                    //Change font of buttons
-                    Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                    sell.setTypeface(type);
-                    back.setTypeface(type);
-
-                    //Action after tapping sell button
                     sell.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            //If there is only one item on tapped slot
                             if (quantityDepotFew[position].equals("1")) {
 
                                 AlertDialog.Builder exit2 = new AlertDialog.Builder(DepotActivity.this);
@@ -139,93 +105,66 @@ public class DepotActivity extends AppCompatActivity{
                                         .setNegativeButton("Yes", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-
                                                 player_gold += Integer.parseInt(pricesDepotFew[position]);
                                                 id_item = idsDepotFew[position];
                                                 saveGold();
                                                 deleteSoldItem(id_player, id_item);
                                                 getAll(id_player);
                                                 dialog.dismiss();
-                                                clickedItem.dismiss();
+                                                dialog2.dismiss();
                                                 longClick = false;
-
                                             }
                                         })
                                         .setPositiveButton("No", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-
                                                 dialog.dismiss();
-                                                clickedItem.dismiss();
+                                                dialog2.dismiss();
                                                 longClick = false;
-
                                             }
                                         })
                                         .create();
                                 exit2.show();
+                            } else {
+                                final Dialog dialog3 = new Dialog(DepotActivity.this);
+                                dialog3.setTitle("Sell");
+                                dialog3.setContentView(R.layout.popup_sell_from_depot_few);
+                                dialog3.show();
+                                dialog3.setCancelable(false);
+                                dialog3.setCanceledOnTouchOutside(false);
+                                dialog2.dismiss();
 
-                            }else{
-
-                                final Dialog clickedFewItems = new Dialog(DepotActivity.this);
-                                clickedFewItems.setContentView(R.layout.popup_sell_from_depot_few);
-                                clickedFewItems.show();
-                                //To prevent from closing dialog by tapping outside its area
-                                clickedFewItems.setCancelable(false);
-                                clickedFewItems.setCanceledOnTouchOutside(false);
-
-                                clickedItem.dismiss();
-
-                                final TextView sellFewText = (TextView) clickedFewItems.findViewById(R.id.textViewSellFew);
-                                final TextView quantityText = (TextView) clickedFewItems.findViewById(R.id.textViewQuantityFew);
-
+                                final TextView quantityText = (TextView) dialog3.findViewById(R.id.textViewQuantity);
                                 quantityText.setText(quantityDepotFew[position]);
+                                Button left = (Button) dialog3.findViewById(R.id.quantityLeft);
+                                Button right = (Button) dialog3.findViewById(R.id.quantityRight);
+                                Button sellFew = (Button) dialog3.findViewById(R.id.buttonSellFew);
+                                Button backFew = (Button) dialog3.findViewById(R.id.buttonBackFew);
 
-                                Button left = (Button) clickedFewItems.findViewById(R.id.quantityLeft);
-                                Button right = (Button) clickedFewItems.findViewById(R.id.quantityRight);
-                                Button sellFew = (Button) clickedFewItems.findViewById(R.id.buttonSellFew);
-                                Button backFew = (Button) clickedFewItems.findViewById(R.id.buttonBackFew);
-
-                                //Change font of buttons and TextView
-                                Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                                left.setTypeface(type);
-                                right.setTypeface(type);
-                                sellFew.setTypeface(type);
-                                backFew.setTypeface(type);
-                                sellFewText.setTypeface(type);
-                                quantityText.setTypeface(type);
-
-                                //If left arrow is tapped
                                 left.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-
                                         int quantitySell = Integer.parseInt(quantityText.getText().toString());
 
                                         if (quantitySell > 1 && quantitySell < Integer.parseInt(quantityDepotFew[position] + 1)) {
-
                                             quantityText.setText(Integer.toString(quantitySell - 1));
-
                                         }
 
                                     }
                                 });
 
-                                //If right arrow is tapped
                                 right.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         int quantitySell = Integer.parseInt(quantityText.getText().toString());
 
                                         if (quantitySell >= 1 && quantitySell < Integer.parseInt(quantityDepotFew[position])) {
-
                                             quantityText.setText(Integer.toString(quantitySell + 1));
-
                                         }
 
                                     }
                                 });
 
-                                //If left arrow is long tapped
                                 left.setOnLongClickListener(new View.OnLongClickListener() {
                                     @Override
                                     public boolean onLongClick(View v) {
@@ -235,7 +174,6 @@ public class DepotActivity extends AppCompatActivity{
                                     }
                                 });
 
-                                //If right arrow is long tapped
                                 right.setOnLongClickListener(new View.OnLongClickListener() {
                                     @Override
                                     public boolean onLongClick(View v) {
@@ -245,45 +183,36 @@ public class DepotActivity extends AppCompatActivity{
                                     }
                                 });
 
-                                //If button sell is tapped
                                 sellFew.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
 
                                         final String quantityToSell = quantityText.getText().toString();
+                                        AlertDialog.Builder exit3 = new AlertDialog.Builder(DepotActivity.this);
 
-                                        AlertDialog.Builder sellFew = new AlertDialog.Builder(DepotActivity.this);
-
-                                        sellFew.setMessage("Are you sure you want to sell " + quantityToSell + "x "
+                                        exit3.setMessage("Are you sure you want to sell " + quantityToSell + "x "
                                                 + namesDepotFew[position].toLowerCase() +
                                                 " for " + (Integer.parseInt(pricesDepotFew[position]) * Integer.parseInt(quantityToSell)) + " gold?")
                                                 .setNegativeButton("Yes", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
-
                                                         player_gold += (Integer.parseInt(pricesDepotFew[position]) * Integer.parseInt(quantityToSell));
                                                         id_item = idsDepotFew[position];
                                                         saveGold();
-                                                        //If player sell all same items
                                                         if (quantityDepotFew[position].equals(quantityToSell)) {
-
                                                             deleteSoldItem(id_player, id_item);
                                                             getAll(id_player);
                                                             loadingGetAll.dismiss();
-
                                                         } else {
-
                                                             int newQuantity = (Integer.parseInt(quantityDepotFew[position]) -
                                                                     Integer.parseInt(quantityToSell));
                                                             updateQuantity(id_player, id_item, newQuantity);
                                                             getAll(id_player);
                                                             loadingGetAll.dismiss();
-
                                                         }
-
                                                         dialog.dismiss();
-                                                        clickedItem.dismiss();
-                                                        clickedFewItems.dismiss();
+                                                        dialog2.dismiss();
+                                                        dialog3.dismiss();
                                                         getAll(id_player);
                                                         longClick = false;
                                                     }
@@ -296,7 +225,7 @@ public class DepotActivity extends AppCompatActivity{
                                                     }
                                                 })
                                                 .create();
-                                        sellFew.show();
+                                        exit3.show();
 
                                     }
                                 });
@@ -304,7 +233,7 @@ public class DepotActivity extends AppCompatActivity{
                                 backFew.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        clickedFewItems.dismiss();
+                                        dialog3.dismiss();
                                         longClick = false;
                                     }
                                 });
@@ -316,7 +245,7 @@ public class DepotActivity extends AppCompatActivity{
                     back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            clickedItem.dismiss();
+                            dialog2.dismiss();
                             longClick = false;
                         }
                     });
@@ -336,11 +265,8 @@ public class DepotActivity extends AppCompatActivity{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                //If tapped slot contain item
-                if (longClick == false && !ConfigDepot.images[0].equals("null")) {
-
+                if (longClick == false && ConfigDepot.ids != null) {
                     if (imagesDepotFew[position] != null) {
-
                         if (Integer.parseInt(quantityDepotFew[position]) > 1 && !imagesDepotFew[position].equals("fish_img")
                         && (typesDepotFew[position].equals("other") || typesDepotFew[position].equals("creature_product"))){
 
@@ -351,11 +277,9 @@ public class DepotActivity extends AppCompatActivity{
                                         Toast.LENGTH_LONG).show();
 
                             }
-
                         } else if (imagesDepotFew[position].equals("fish_img") && Integer.parseInt(quantityDepotFew[position]) > 1) {
 
                             if (imagesDepotFew[position] != null) {
-
                                 Toast.makeText(getBaseContext(),
                                         "You see " + quantityDepotFew[position] + " fish. They weigh " +
                                                 nf.format(Double.parseDouble(weightDepotFew[position]) * Double.parseDouble(quantityDepotFew[position])) + " oz.",
@@ -412,9 +336,7 @@ public class DepotActivity extends AppCompatActivity{
 
         GridView grid = (GridView) findViewById(R.id.depo);
 
-        //Fill depot
-        if(!ConfigDepot.images[0].equals("null")){
-
+        if(ConfigDepot.images != null){
             imagesDepot = new String[ConfigDepot.images.length];
             typesDepot = new String[ConfigDepot.types.length];
             descriptionsDepot = new String[ConfigDepot.descriptions.length];
@@ -501,9 +423,7 @@ public class DepotActivity extends AppCompatActivity{
 
                             k += 1;
                         }
-
                         imageNumber = k;
-
                     } else {
 
                         String image = imagesDepot[i];
@@ -521,14 +441,12 @@ public class DepotActivity extends AppCompatActivity{
 
                         k += 1;
                     }
-
                 } else {
 
                     String image = imagesDepot[i];
                     String text = quantityDepot[i];
                     imageID = getResources().getIdentifier(image, "mipmap", "com.example.rafal.gra");
                     ((ImageAdapter) grid.getAdapter()).changeImage(k, imageID);
-
                     if (!text.equals("1")) {
                         ((ImageAdapter) grid.getAdapter()).changeText(k, text + "  ");
                     }
@@ -546,8 +464,8 @@ public class DepotActivity extends AppCompatActivity{
                 }
 
             }
-
         }else {
+
 
             for (int i = 0; i < 40; i++) {
                 ((ImageAdapter) grid.getAdapter()).changeImage(i, R.mipmap.empty);
@@ -591,6 +509,7 @@ public class DepotActivity extends AppCompatActivity{
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest2);
+
 
     }
 
@@ -640,7 +559,6 @@ public class DepotActivity extends AppCompatActivity{
 
     }
 
-    //Update number of items if not all same items are sold
     public void updateQuantity(final String id_player, final String id_item, final int quantity){
 
         StringRequest request = new StringRequest(Request.Method.POST, URL_UPDATE_QUANTITY,
@@ -671,7 +589,6 @@ public class DepotActivity extends AppCompatActivity{
 
     }
 
-    //If all same items were sold
     public void deleteSoldItem(final String id_player, final String id_item){
 
         String url = URL_DELETE_ITEM + id_player + "&id_item=" + id_item;
@@ -698,7 +615,7 @@ public class DepotActivity extends AppCompatActivity{
         grid.setAdapter(new ImageAdapter(this));
         grid.scrollTo(0,0);
 
-        if(!ConfigDepot.images[0].equals("null")) {
+        if(ConfigDepot.images != null) {
             type = "weapon";
             showType(type);
         }
@@ -711,7 +628,7 @@ public class DepotActivity extends AppCompatActivity{
         grid.setAdapter(new ImageAdapter(this));
         grid.scrollTo(0,0);
 
-        if(!ConfigDepot.images[0].equals("null")) {
+        if(ConfigDepot.images != null) {
             type = "shield";
             showType(type);
         }
@@ -725,7 +642,7 @@ public class DepotActivity extends AppCompatActivity{
         grid.setAdapter(new ImageAdapter(this));
         grid.scrollTo(0,0);
 
-        if(!ConfigDepot.images[0].equals("null")) {
+        if(ConfigDepot.images != null) {
             type = "armor";
             showType(type);
         }
@@ -739,7 +656,7 @@ public class DepotActivity extends AppCompatActivity{
         grid.setAdapter(new ImageAdapter(this));
         grid.scrollTo(0,0);
 
-        if(!ConfigDepot.images[0].equals("null")) {
+        if(ConfigDepot.images != null) {
             type = "jewellery";
             showType(type);
         }
@@ -753,7 +670,7 @@ public class DepotActivity extends AppCompatActivity{
         grid.setAdapter(new ImageAdapter(this));
         grid.scrollTo(0,0);
 
-        if(!ConfigDepot.images[0].equals("null")) {
+        if(ConfigDepot.images != null) {
             type = "creature_product";
             showType(type);
         }
@@ -767,7 +684,7 @@ public class DepotActivity extends AppCompatActivity{
         grid.setAdapter(new ImageAdapter(this));
         grid.scrollTo(0,0);
 
-        if(!ConfigDepot.images[0].equals("null")) {
+        if(ConfigDepot.images != null) {
             type = "other";
             showType(type);
         }
@@ -833,7 +750,7 @@ public class DepotActivity extends AppCompatActivity{
 
     }
 
-    //Check if type exist, if not then display empty depot
+    //Check if type exist, if not them display empty depot
     public void checkIfTypeExist(){
 
         if(ConfigDepot.images != null) {
@@ -841,13 +758,13 @@ public class DepotActivity extends AppCompatActivity{
 
                 String t = ConfigDepot.types[i];
                 if (t.equals(type)) {
-                    checkIfTypeExist = false;
+                    check = false;
                     break;
                 }
-                checkIfTypeExist = true;
+                check = true;
             }
 
-            if (checkIfTypeExist == true) {
+            if (check == true) {
 
                 GridView grid = (GridView) findViewById(R.id.depo);
                 for (int i = 0; i < 40; i++) {
@@ -857,7 +774,7 @@ public class DepotActivity extends AppCompatActivity{
                 Arrays.fill(imagesDepot, null);
                 Arrays.fill(imagesDepotFew, null);
             }
-            checkIfTypeExist = false;
+            check = false;
         }
     }
 
@@ -899,6 +816,7 @@ public class DepotActivity extends AppCompatActivity{
         SharedPreferences loadE = getSharedPreferences("Save", MODE_PRIVATE);
         id_player = loadE.getString("id_player", "");
         player_name = loadE.getString("player_name", "");
+
     }
 
 }
