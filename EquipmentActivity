@@ -6,7 +6,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -36,35 +36,37 @@ import java.util.Locale;
 import java.util.Map;
 import android.os.Handler;
 
+import static java.sql.Types.NULL;
+
 public class EquipmentActivity extends AppCompatActivity {
 
     public static String[] imagesDepot, typesDepot, descriptionsDepot, weightDepot, namesDepot,
                             idsDepot, quantityDepot, imagesDepotFew, typesDepotFew, descriptionsDepotFew,
                             weightDepotFew, namesDepotFew, idsDepotFew, quantityDepotFew, subtypes,
-                            subtypesFew, imagesEquipment, descriptionsEquipment;
+                            subtypesFew;
 
     private ProgressDialog loadingGetPlayerId, loadingGetImages, loadingGetAll;
 
+    public static String[] imagesEquipment, descriptionsEquipment;
     public static int[] idsEquipment;
 
     int player_health_potions, player_mana_potions, player_eq_helmet, player_eq_armor,
             player_eq_legs, player_eq_boots, player_eq_weapon, player_eq_shield,
-            player_eq_ring_left, player_eq_ring_right, player_eq_amulet, quant, imageID,
-            helmet_temp = 0, armor_temp = 0, legs_temp = 0, boots_temp = 0, weapon_temp = 0,
-            shield_temp = 0, amulet_temp = 0, ring_left_temp = 0, ring_right_temp = 0;
+            player_eq_ring_left, player_eq_ring_right, player_eq_amulet, quant, imageID;
 
-    public String id_player, player_name, descriptionHelmet, descriptionArmor, descriptionLegs,
-                descriptionBoots, descriptionWeapon, descriptionShield, descriptionAmulet,
-                descriptionRingLeft,descriptionRingRight;
+    int helmet_temp = 0, armor_temp = 0, legs_temp = 0, boots_temp = 0, weapon_temp = 0,
+        shield_temp = 0, amulet_temp = 0, ring_left_temp = 0, ring_right_temp = 0;
 
-    private Button backButton;
+    String id_player, player_name, descriptionHelmet, descriptionArmor, descriptionLegs,
+            descriptionBoots, descriptionWeapon, descriptionShield, descriptionAmulet,
+            descriptionRingLeft,descriptionRingRight;
 
     boolean longClick = false, wait = false;
 
-    public static final String URL_UPDATE_ITEM = "http://testcase.net23.net/saveSameLoot.php";
-    public static final String URL_INSERT_ITEM = "http://testcase.net23.net/saveLoot.php";
-    public static final String URL_DELETE_ITEM = "http://testcase.net23.net/deleteSoldItem.php?id_player=";
-    public static final String URL = "http://testcase.net23.net/saveEquipment.php";
+    String URL_UPDATE_ITEM = "https://mundial2018.000webhostapp.com/saveSameLoot.php";
+    String URL_INSERT_ITEM = "https://mundial2018.000webhostapp.com/saveLoot.php";
+    public static final String URL_DELETE_ITEM = "https://mundial2018.000webhostapp.com/deleteSoldItem.php?id_player=";
+    public static final String URL = "https://mundial2018.000webhostapp.com/saveEquipment.php";
 
     RequestQueue requestQueue;
 
@@ -74,7 +76,6 @@ public class EquipmentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_equipment);
 
-        //Insert images of empty equipment
         ImageView helmet_img = (ImageView) findViewById(R.id.imageViewHelmet);
         ImageView armor_img = (ImageView) findViewById(R.id.imageViewArmor);
         ImageView legs_img = (ImageView) findViewById(R.id.imageViewLegs);
@@ -85,19 +86,12 @@ public class EquipmentActivity extends AppCompatActivity {
         ImageView ring_left_img = (ImageView) findViewById(R.id.imageViewRingLeft);
         ImageView ring_right_img = (ImageView) findViewById(R.id.imageViewRingRight);
 
-        backButton = (Button) findViewById(R.id.buttonBack);
-
-        //Change font of button
-        Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-        backButton.setTypeface(type);
-
         loadGame();
 
         getPlayerId();
 
         requestQueue = Volley.newRequestQueue(getApplicationContext());
 
-        //If helmet is clicked
         helmet_img.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
@@ -105,44 +99,40 @@ public class EquipmentActivity extends AppCompatActivity {
 
                 if(helmet_temp != 0) {
 
-                    final Dialog helmetDialog = new Dialog(EquipmentActivity.this);
-                    helmetDialog.setContentView(R.layout.popup_unequip);
-                    helmetDialog.show();
-                    helmetDialog.setCancelable(false);
-                    helmetDialog.setCanceledOnTouchOutside(false);
+                    final Dialog dialog4 = new Dialog(EquipmentActivity.this);
+                    dialog4.setTitle("Uneq");
+                    dialog4.setContentView(R.layout.popup_unequip);
+                    dialog4.show();
+                    dialog4.setCancelable(false);
+                    dialog4.setCanceledOnTouchOutside(false);
 
                     longClick = true;
 
-                    Button unequip = (Button) helmetDialog.findViewById(R.id.equip);
-                    Button back = (Button) helmetDialog.findViewById(R.id.back);
+                    Button unequip = (Button) dialog4.findViewById(R.id.unequip);
+                    Button back = (Button) dialog4.findViewById(R.id.back);
 
-                    Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                    unequip.setTypeface(type);
-                    back.setTypeface(type);
-
-                    //If unequip button is clicked
                     unequip.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            boolean notExistInDepot = true;
+                            boolean ty = true;
                             int temporary = player_eq_helmet;
                             player_eq_helmet = 0;
-
+                            if(idsDepot != null){
                             for (int i = 0; i < idsDepot.length; i++) {
-                                //If unequipped helmet exist in depot
                                 if (temporary == Integer.parseInt(idsDepot[i])) {
                                     updateItemDepot(id_player, temporary, (Integer.parseInt(quantityDepot[i]) + 1));
-                                    notExistInDepot = false;
+                                    ty = false;
                                     break;
                                 }
                             }
-                            if (notExistInDepot == true) {
+                            }
+                            if (ty == true) {
                                 insertItemDepot(id_player, temporary, 1);
                             }
 
                             saveEquipment();
-                            helmetDialog.dismiss();
+                            dialog4.dismiss();
                             helmet_temp = 0;
                             longClick = false;
 
@@ -162,7 +152,7 @@ public class EquipmentActivity extends AppCompatActivity {
                     back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            helmetDialog.dismiss();
+                            dialog4.dismiss();
                             longClick = false;
                         }
                     });
@@ -173,7 +163,6 @@ public class EquipmentActivity extends AppCompatActivity {
             }
         });
 
-        //If armor is clicked
         armor_img.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
@@ -181,45 +170,39 @@ public class EquipmentActivity extends AppCompatActivity {
 
                 if(armor_temp != 0) {
 
-                    final Dialog armorDialog = new Dialog(EquipmentActivity.this);
-                    armorDialog.setContentView(R.layout.popup_unequip);
-                    armorDialog.show();
-                    armorDialog.setCancelable(false);
-                    armorDialog.setCanceledOnTouchOutside(false);
+                    final Dialog dialog4 = new Dialog(EquipmentActivity.this);
+                    dialog4.setTitle("Uneq");
+                    dialog4.setContentView(R.layout.popup_unequip);
+                    dialog4.show();
+                    dialog4.setCancelable(false);
+                    dialog4.setCanceledOnTouchOutside(false);
 
                     longClick = true;
 
-                    Button unequip = (Button) armorDialog.findViewById(R.id.equip);
-                    Button back = (Button) armorDialog.findViewById(R.id.back);
+                    Button unequip = (Button) dialog4.findViewById(R.id.unequip);
+                    Button back = (Button) dialog4.findViewById(R.id.back);
 
-                    //Change font of buttons
-                    Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                    unequip.setTypeface(type);
-                    back.setTypeface(type);
-
-                    //If unequip button is clicked
                     unequip.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            boolean notExistInDepot = true;
+                            boolean ty = true;
                             int temporary = player_eq_armor;
                             player_eq_armor = 0;
 
                             for (int i = 0; i < idsDepot.length; i++) {
-                                //If unequipped armor exist in depot
                                 if (temporary == Integer.parseInt(idsDepot[i])) {
                                     updateItemDepot(id_player, temporary, (Integer.parseInt(quantityDepot[i]) + 1));
-                                    notExistInDepot = false;
+                                    ty = false;
                                     break;
                                 }
                             }
-                            if (notExistInDepot == true) {
+                            if (ty == true) {
                                 insertItemDepot(id_player, temporary, 1);
                             }
 
                             saveEquipment();
-                            armorDialog.dismiss();
+                            dialog4.dismiss();
                             armor_temp = 0;
                             longClick = false;
 
@@ -239,7 +222,7 @@ public class EquipmentActivity extends AppCompatActivity {
                     back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            armorDialog.dismiss();
+                            dialog4.dismiss();
                             longClick = false;
                         }
                     });
@@ -250,7 +233,6 @@ public class EquipmentActivity extends AppCompatActivity {
             }
         });
 
-        //If legs are clicked
         legs_img.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
@@ -258,44 +240,39 @@ public class EquipmentActivity extends AppCompatActivity {
 
                 if(legs_temp != 0) {
 
-                    final Dialog legsDialog = new Dialog(EquipmentActivity.this);
-                    legsDialog.setContentView(R.layout.popup_unequip);
-                    legsDialog.show();
-                    legsDialog.setCancelable(false);
-                    legsDialog.setCanceledOnTouchOutside(false);
+                    final Dialog dialog4 = new Dialog(EquipmentActivity.this);
+                    dialog4.setTitle("Uneq");
+                    dialog4.setContentView(R.layout.popup_unequip);
+                    dialog4.show();
+                    dialog4.setCancelable(false);
+                    dialog4.setCanceledOnTouchOutside(false);
 
                     longClick = true;
 
-                    Button unequip = (Button) legsDialog.findViewById(R.id.equip);
-                    Button back = (Button) legsDialog.findViewById(R.id.back);
+                    Button unequip = (Button) dialog4.findViewById(R.id.unequip);
+                    Button back = (Button) dialog4.findViewById(R.id.back);
 
-                    Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                    unequip.setTypeface(type);
-                    back.setTypeface(type);
-
-                    //If unequip button is clicked
                     unequip.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            boolean notExistInDepot = true;
+                            boolean ty = true;
                             int temporary = player_eq_legs;
                             player_eq_legs = 0;
 
                             for (int i = 0; i < idsDepot.length; i++) {
-                                //If unequipped legs exist in depot
                                 if (temporary == Integer.parseInt(idsDepot[i])) {
                                     updateItemDepot(id_player, temporary, (Integer.parseInt(quantityDepot[i]) + 1));
-                                    notExistInDepot = false;
+                                    ty = false;
                                     break;
                                 }
                             }
-                            if (notExistInDepot == true) {
+                            if (ty == true) {
                                 insertItemDepot(id_player, temporary, 1);
                             }
 
                             saveEquipment();
-                            legsDialog.dismiss();
+                            dialog4.dismiss();
                             legs_temp = 0;
                             longClick = false;
 
@@ -315,7 +292,7 @@ public class EquipmentActivity extends AppCompatActivity {
                     back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            legsDialog.dismiss();
+                            dialog4.dismiss();
                             longClick = false;
                         }
                     });
@@ -326,7 +303,6 @@ public class EquipmentActivity extends AppCompatActivity {
             }
         });
 
-        //If boots are clicked
         boots_img.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
@@ -334,45 +310,39 @@ public class EquipmentActivity extends AppCompatActivity {
 
                 if(boots_temp != 0) {
 
-                    final Dialog bootsDialog = new Dialog(EquipmentActivity.this);
-                    bootsDialog.setContentView(R.layout.popup_unequip);
-                    bootsDialog.show();
-                    bootsDialog.setCancelable(false);
-                    bootsDialog.setCanceledOnTouchOutside(false);
+                    final Dialog dialog4 = new Dialog(EquipmentActivity.this);
+                    dialog4.setTitle("Uneq");
+                    dialog4.setContentView(R.layout.popup_unequip);
+                    dialog4.show();
+                    dialog4.setCancelable(false);
+                    dialog4.setCanceledOnTouchOutside(false);
 
                     longClick = true;
 
-                    Button unequip = (Button) bootsDialog.findViewById(R.id.equip);
-                    Button back = (Button) bootsDialog.findViewById(R.id.back);
+                    Button unequip = (Button) dialog4.findViewById(R.id.unequip);
+                    Button back = (Button) dialog4.findViewById(R.id.back);
 
-                    //Change font of buttons
-                    Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                    unequip.setTypeface(type);
-                    back.setTypeface(type);
-
-                    //If unequip button is clicked
                     unequip.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            boolean notExistInDepot = true;
+                            boolean ty = true;
                             int temporary = player_eq_boots;
                             player_eq_boots = 0;
 
                             for (int i = 0; i < idsDepot.length; i++) {
-                                //If unequipped boots exist in depot
                                 if (temporary == Integer.parseInt(idsDepot[i])) {
                                     updateItemDepot(id_player, temporary, (Integer.parseInt(quantityDepot[i]) + 1));
-                                    notExistInDepot = false;
+                                    ty = false;
                                     break;
                                 }
                             }
-                            if (notExistInDepot == true) {
+                            if (ty == true) {
                                 insertItemDepot(id_player, temporary, 1);
                             }
 
                             saveEquipment();
-                            bootsDialog.dismiss();
+                            dialog4.dismiss();
                             boots_temp = 0;
                             longClick = false;
 
@@ -392,7 +362,7 @@ public class EquipmentActivity extends AppCompatActivity {
                     back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            bootsDialog.dismiss();
+                            dialog4.dismiss();
                             longClick = false;
                         }
                     });
@@ -403,7 +373,6 @@ public class EquipmentActivity extends AppCompatActivity {
             }
         });
 
-        //If weapon is clicked
         weapon_img.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
@@ -411,45 +380,40 @@ public class EquipmentActivity extends AppCompatActivity {
 
                 if(weapon_temp != 0) {
 
-                    final Dialog weaponDialog = new Dialog(EquipmentActivity.this);
-                    weaponDialog.setContentView(R.layout.popup_unequip);
-                    weaponDialog.show();
-                    weaponDialog.setCancelable(false);
-                    weaponDialog.setCanceledOnTouchOutside(false);
+                    final Dialog dialog4 = new Dialog(EquipmentActivity.this);
+                    dialog4.setTitle("Uneq");
+                    dialog4.setContentView(R.layout.popup_unequip);
+                    dialog4.show();
+                    dialog4.setCancelable(false);
+                    dialog4.setCanceledOnTouchOutside(false);
 
                     longClick = true;
 
-                    Button unequip = (Button) weaponDialog.findViewById(R.id.equip);
-                    Button back = (Button) weaponDialog.findViewById(R.id.back);
+                    Button unequip = (Button) dialog4.findViewById(R.id.unequip);
+                    Button back = (Button) dialog4.findViewById(R.id.back);
 
-                    //Change font of buttons
-                    Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                    unequip.setTypeface(type);
-                    back.setTypeface(type);
-
-                    //If unequip button is clicked
                     unequip.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            boolean notExistInDepot = true;
+                            boolean ty = true;
                             int temporary = player_eq_weapon;
                             player_eq_weapon = 0;
-
-                            for (int i = 0; i < idsDepot.length; i++) {
-                                //If unequipped weapon exist in depot
-                                if (temporary == Integer.parseInt(idsDepot[i])) {
-                                    updateItemDepot(id_player, temporary, (Integer.parseInt(quantityDepot[i]) + 1));
-                                    notExistInDepot = false;
-                                    break;
+                            if(idsDepotFew != null) {
+                                for (int i = 0; i < idsDepot.length; i++) {
+                                    if (temporary == Integer.parseInt(idsDepot[i])) {
+                                        updateItemDepot(id_player, temporary, (Integer.parseInt(quantityDepot[i]) + 1));
+                                        ty = false;
+                                        break;
+                                    }
                                 }
                             }
-                            if (notExistInDepot == true) {
+                            if (ty == true) {
                                 insertItemDepot(id_player, temporary, 1);
                             }
 
                             saveEquipment();
-                            weaponDialog.dismiss();
+                            dialog4.dismiss();
                             weapon_temp = 0;
                             longClick = false;
 
@@ -469,7 +433,7 @@ public class EquipmentActivity extends AppCompatActivity {
                     back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            weaponDialog.dismiss();
+                            dialog4.dismiss();
                             longClick = false;
                         }
                     });
@@ -480,7 +444,6 @@ public class EquipmentActivity extends AppCompatActivity {
             }
         });
 
-        //If shield is clicked
         shield_img.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
@@ -488,45 +451,40 @@ public class EquipmentActivity extends AppCompatActivity {
 
                 if(shield_temp != 0) {
 
-                    final Dialog shieldDialog = new Dialog(EquipmentActivity.this);
-                    shieldDialog.setContentView(R.layout.popup_unequip);
-                    shieldDialog.show();
-                    shieldDialog.setCancelable(false);
-                    shieldDialog.setCanceledOnTouchOutside(false);
+                    final Dialog dialog4 = new Dialog(EquipmentActivity.this);
+                    dialog4.setTitle("Uneq");
+                    dialog4.setContentView(R.layout.popup_unequip);
+                    dialog4.show();
+                    dialog4.setCancelable(false);
+                    dialog4.setCanceledOnTouchOutside(false);
 
                     longClick = true;
 
-                    Button unequip = (Button) shieldDialog.findViewById(R.id.equip);
-                    Button back = (Button) shieldDialog.findViewById(R.id.back);
+                    Button unequip = (Button) dialog4.findViewById(R.id.unequip);
+                    Button back = (Button) dialog4.findViewById(R.id.back);
 
-                    //Change font of buttons
-                    Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                    unequip.setTypeface(type);
-                    back.setTypeface(type);
-
-                    //If unequip button is clicked
                     unequip.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            boolean notExistInDepot = true;
+                            boolean ty = true;
                             int temporary = player_eq_shield;
                             player_eq_shield = 0;
-
-                            for (int i = 0; i < idsDepot.length; i++) {
-                                //If unequipped shield exist in depot
-                                if (temporary == Integer.parseInt(idsDepot[i])) {
-                                    updateItemDepot(id_player, temporary, (Integer.parseInt(quantityDepot[i]) + 1));
-                                    notExistInDepot = false;
-                                    break;
+                            if(idsDepot != null) {
+                                for (int i = 0; i < idsDepot.length; i++) {
+                                    if (temporary == Integer.parseInt(idsDepot[i])) {
+                                        updateItemDepot(id_player, temporary, (Integer.parseInt(quantityDepot[i]) + 1));
+                                        ty = false;
+                                        break;
+                                    }
                                 }
                             }
-                            if (notExistInDepot == true) {
+                            if (ty == true) {
                                 insertItemDepot(id_player, temporary, 1);
                             }
 
                             saveEquipment();
-                            shieldDialog.dismiss();
+                            dialog4.dismiss();
                             shield_temp = 0;
                             longClick = false;
 
@@ -546,7 +504,7 @@ public class EquipmentActivity extends AppCompatActivity {
                     back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            shieldDialog.dismiss();
+                            dialog4.dismiss();
                             longClick = false;
                         }
                     });
@@ -557,7 +515,6 @@ public class EquipmentActivity extends AppCompatActivity {
             }
         });
 
-        //If amulet is clicked
         amulet_img.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
@@ -565,44 +522,39 @@ public class EquipmentActivity extends AppCompatActivity {
 
                 if(amulet_temp != 0) {
 
-                    final Dialog amuletDialog = new Dialog(EquipmentActivity.this);
-                    amuletDialog.setContentView(R.layout.popup_unequip);
-                    amuletDialog.show();
-                    amuletDialog.setCancelable(false);
-                    amuletDialog.setCanceledOnTouchOutside(false);
+                    final Dialog dialog4 = new Dialog(EquipmentActivity.this);
+                    dialog4.setTitle("Uneq");
+                    dialog4.setContentView(R.layout.popup_unequip);
+                    dialog4.show();
+                    dialog4.setCancelable(false);
+                    dialog4.setCanceledOnTouchOutside(false);
 
                     longClick = true;
 
-                    Button unequip = (Button) amuletDialog.findViewById(R.id.equip);
-                    Button back = (Button) amuletDialog.findViewById(R.id.back);
+                    Button unequip = (Button) dialog4.findViewById(R.id.unequip);
+                    Button back = (Button) dialog4.findViewById(R.id.back);
 
-                    Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                    unequip.setTypeface(type);
-                    back.setTypeface(type);
-
-                    //If unequip button is clicked
                     unequip.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            boolean notExistInDepot = true;
+                            boolean ty = true;
                             int temporary = player_eq_amulet;
                             player_eq_amulet = 0;
 
                             for (int i = 0; i < idsDepot.length; i++) {
-                                //If unequipped amulet exist in depot
                                 if (temporary == Integer.parseInt(idsDepot[i])) {
                                     updateItemDepot(id_player, temporary, (Integer.parseInt(quantityDepot[i]) + 1));
-                                    notExistInDepot = false;
+                                    ty = false;
                                     break;
                                 }
                             }
-                            if (notExistInDepot == true) {
+                            if (ty == true) {
                                 insertItemDepot(id_player, temporary, 1);
                             }
 
                             saveEquipment();
-                            amuletDialog.dismiss();
+                            dialog4.dismiss();
                             amulet_temp = 0;
                             longClick = false;
 
@@ -622,7 +574,7 @@ public class EquipmentActivity extends AppCompatActivity {
                     back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            amuletDialog.dismiss();
+                            dialog4.dismiss();
                             longClick = false;
                         }
                     });
@@ -633,7 +585,6 @@ public class EquipmentActivity extends AppCompatActivity {
             }
         });
 
-        //If left ring is clicked
         ring_left_img.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
@@ -641,44 +592,39 @@ public class EquipmentActivity extends AppCompatActivity {
 
                 if(ring_left_temp != 0) {
 
-                    final Dialog leftRingDialog = new Dialog(EquipmentActivity.this);
-                    leftRingDialog.setContentView(R.layout.popup_unequip);
-                    leftRingDialog.show();
-                    leftRingDialog.setCancelable(false);
-                    leftRingDialog.setCanceledOnTouchOutside(false);
+                    final Dialog dialog4 = new Dialog(EquipmentActivity.this);
+                    dialog4.setTitle("Uneq");
+                    dialog4.setContentView(R.layout.popup_unequip);
+                    dialog4.show();
+                    dialog4.setCancelable(false);
+                    dialog4.setCanceledOnTouchOutside(false);
 
                     longClick = true;
 
-                    Button unequip = (Button) leftRingDialog.findViewById(R.id.equip);
-                    Button back = (Button) leftRingDialog.findViewById(R.id.back);
+                    Button unequip = (Button) dialog4.findViewById(R.id.unequip);
+                    Button back = (Button) dialog4.findViewById(R.id.back);
 
-                    Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                    unequip.setTypeface(type);
-                    back.setTypeface(type);
-
-                    //If unequip button is clicked
                     unequip.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            boolean notExistInDepot = true;
+                            boolean ty = true;
                             int temporary = player_eq_ring_left;
                             player_eq_ring_left = 0;
 
                             for (int i = 0; i < idsDepot.length; i++) {
-                                //If unequipped left ring exist in depot
                                 if (temporary == Integer.parseInt(idsDepot[i])) {
                                     updateItemDepot(id_player, temporary, (Integer.parseInt(quantityDepot[i]) + 1));
-                                    notExistInDepot = false;
+                                    ty = false;
                                     break;
                                 }
                             }
-                            if (notExistInDepot == true) {
+                            if (ty == true) {
                                 insertItemDepot(id_player, temporary, 1);
                             }
 
                             saveEquipment();
-                            leftRingDialog.dismiss();
+                            dialog4.dismiss();
                             ring_left_temp = 0;
                             longClick = false;
 
@@ -698,7 +644,7 @@ public class EquipmentActivity extends AppCompatActivity {
                     back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            leftRingDialog.dismiss();
+                            dialog4.dismiss();
                             longClick = false;
                         }
                     });
@@ -709,7 +655,6 @@ public class EquipmentActivity extends AppCompatActivity {
             }
         });
 
-        //If right ring is clicked
         ring_right_img.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
@@ -717,44 +662,39 @@ public class EquipmentActivity extends AppCompatActivity {
 
                 if(ring_right_temp != 0) {
 
-                    final Dialog rightRingDialog = new Dialog(EquipmentActivity.this);
-                    rightRingDialog.setContentView(R.layout.popup_unequip);
-                    rightRingDialog.show();
-                    rightRingDialog.setCancelable(false);
-                    rightRingDialog.setCanceledOnTouchOutside(false);
+                    final Dialog dialog4 = new Dialog(EquipmentActivity.this);
+                    dialog4.setTitle("Uneq");
+                    dialog4.setContentView(R.layout.popup_unequip);
+                    dialog4.show();
+                    dialog4.setCancelable(false);
+                    dialog4.setCanceledOnTouchOutside(false);
 
                     longClick = true;
 
-                    Button unequip = (Button) rightRingDialog.findViewById(R.id.equip);
-                    Button back = (Button) rightRingDialog.findViewById(R.id.back);
+                    Button unequip = (Button) dialog4.findViewById(R.id.unequip);
+                    Button back = (Button) dialog4.findViewById(R.id.back);
 
-                    Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                    unequip.setTypeface(type);
-                    back.setTypeface(type);
-
-                    //If unequip button is clicked
                     unequip.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            boolean notExistInDepot = true;
+                            boolean ty = true;
                             int temporary = player_eq_ring_right;
                             player_eq_ring_right = 0;
 
                             for (int i = 0; i < idsDepot.length; i++) {
-                                //If unequipped right ring exist in depot
                                 if (temporary == Integer.parseInt(idsDepot[i])) {
                                     updateItemDepot(id_player, temporary, (Integer.parseInt(quantityDepot[i]) + 1));
-                                    notExistInDepot = false;
+                                    ty = false;
                                     break;
                                 }
                             }
-                            if (notExistInDepot == true) {
+                            if (ty == true) {
                                 insertItemDepot(id_player, temporary, 1);
                             }
 
                             saveEquipment();
-                            rightRingDialog.dismiss();
+                            dialog4.dismiss();
                             ring_right_temp = 0;
                             longClick = false;
 
@@ -774,7 +714,7 @@ public class EquipmentActivity extends AppCompatActivity {
                     back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            rightRingDialog.dismiss();
+                            dialog4.dismiss();
                             longClick = false;
                         }
                     });
@@ -788,124 +728,98 @@ public class EquipmentActivity extends AppCompatActivity {
         final GridView grid = (GridView) findViewById(R.id.gridView);
         grid.setAdapter(new ImageAdapter(this));
 
-        //If item from depot is long clicked
+        getAll();
+
         grid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
 
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int position, long arg3) {
-
-                if(!ConfigDepot.images[0].equals("null") &&
-                        ((ImageAdapter) grid.getAdapter()).checkImage(position)!=R.mipmap.empty) {
-
-                    final Dialog clickedItem = new Dialog(EquipmentActivity.this);
-                    clickedItem.setContentView(R.layout.popup_equip);
-                    clickedItem.show();
-                    clickedItem.setCancelable(false);
-                    clickedItem.setCanceledOnTouchOutside(false);
+                if(!ConfigDepot.images[0].equals("null") && ((ImageAdapter) grid.getAdapter()).checkImage(position)!=R.mipmap.empty) {
+                    final Dialog dialog2 = new Dialog(EquipmentActivity.this);
+                    dialog2.setTitle("Eq");
+                    dialog2.setContentView(R.layout.popup_equip);
+                    dialog2.show();
+                    dialog2.setCancelable(false);
+                    dialog2.setCanceledOnTouchOutside(false);
 
                     longClick = true;
 
-                    Button equip = (Button) clickedItem.findViewById(R.id.equip);
-                    Button back = (Button) clickedItem.findViewById(R.id.back);
-
-                    //Change font of buttons
-                    Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                    equip.setTypeface(type);
-                    back.setTypeface(type);
+                    Button equip = (Button) dialog2.findViewById(R.id.unequip);
+                    Button back = (Button) dialog2.findViewById(R.id.back);
 
                     equip.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            //If clicked item type is not ring
                             if (!subtypesFew[position].equals("ring")) {
 
-                                //If clicked item type is weapon
                                 if (typesDepotFew[position].equals("weapon")) {
 
-                                    //If there is no weapon equipped
                                     if (weapon_temp == 0) {
-
                                         player_eq_weapon = Integer.parseInt(idsDepotFew[position]);
                                         saveEquipment();
 
-                                        //If only one item exist in depot
                                         if (Integer.parseInt(quantityDepotFew[position]) == 1) {
-
                                             deleteItem(id_player, idsDepotFew[position]);
-
+                                            getAll();
                                         } else {
-
                                             for (int i = 0; i < idsDepot.length; i++) {
-
                                                 if (player_eq_weapon == Integer.parseInt(idsDepot[i])) {
                                                     updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]), (Integer.parseInt(quantityDepot[i]) - 1));
                                                     break;
-
                                                 }
                                             }
                                         }
 
-                                        clickedItem.dismiss();
+                                        dialog2.dismiss();
                                         weapon_temp = 1;
                                         longClick = false;
-
                                     } else {
-
                                         int temp = player_eq_weapon;
                                         player_eq_weapon = Integer.parseInt(idsDepotFew[position]);
 
                                         if (temp != player_eq_weapon) {
 
                                             if (Integer.parseInt(quantityDepotFew[position]) > 1) {
-
                                                 updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]),
                                                         (Integer.parseInt(quantityDepotFew[position]) - 1));
-                                                boolean notExistInDepot = true;
+                                                boolean ty = true;
 
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        ty = false;
                                                         break;
-
                                                     }
-
                                                 }
-
-                                                if (notExistInDepot == true) {
+                                                if (ty == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
 
                                             } else {
-
-                                                boolean notExistInDepot = true;
+                                                boolean tu = true;
                                                 deleteItem(id_player, Integer.toString(player_eq_weapon));
-
+                                                getAll();
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        tu = false;
                                                         break;
-
                                                     }
-
                                                 }
-
-                                                if (notExistInDepot == true) {
+                                                if (tu == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
+
+
                                             }
                                         }
 
-                                        clickedItem.dismiss();
+                                        dialog2.dismiss();
                                         longClick = false;
                                         saveEquipment();
+                                        getAll();
 
                                     }
 
@@ -918,39 +832,27 @@ public class EquipmentActivity extends AppCompatActivity {
                                         }
                                     }, 500);
 
-                                //If clicked item type is shield
+
                                 } else if (typesDepotFew[position].equals("shield")) {
 
-                                    //If there is no shield equipped
-                                    if (shield_temp == 0) {
 
+                                    if (shield_temp == 0) {
                                         player_eq_shield = Integer.parseInt(idsDepotFew[position]);
                                         saveEquipment();
-
-                                        //If only one item exist in depot
                                         if (Integer.parseInt(quantityDepotFew[position]) == 1) {
-
                                             deleteItem(id_player, idsDepotFew[position]);
-
                                         } else {
-
                                             for (int i = 0; i < idsDepot.length; i++) {
-
                                                 if (player_eq_shield == Integer.parseInt(idsDepot[i])) {
-
                                                     updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]), (Integer.parseInt(quantityDepot[i]) - 1));
                                                     break;
-
                                                 }
                                             }
                                         }
-
-                                        clickedItem.dismiss();
+                                        dialog2.dismiss();
                                         shield_temp = 1;
                                         longClick = false;
-
                                     } else {
-
                                         int temp = player_eq_shield;
                                         player_eq_shield = Integer.parseInt(idsDepotFew[position]);
 
@@ -959,45 +861,39 @@ public class EquipmentActivity extends AppCompatActivity {
                                             if (Integer.parseInt(quantityDepotFew[position]) > 1) {
                                                 updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]),
                                                         (Integer.parseInt(quantityDepotFew[position]) - 1));
-
-                                                boolean notExistInDepot = true;
+                                                boolean ty = true;
 
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        ty = false;
                                                         break;
-
                                                     }
                                                 }
-
-                                                if (notExistInDepot == true) {
+                                                if (ty == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
 
                                             } else {
-
-                                                boolean notExistInDepot = true;
+                                                boolean tu = true;
                                                 deleteItem(id_player, Integer.toString(player_eq_shield));
 
                                                 for (int i = 0; i < idsDepot.length; i++) {
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        tu = false;
                                                         break;
                                                     }
                                                 }
-
-                                                if (notExistInDepot == true) {
+                                                if (tu == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
+
 
                                             }
                                         }
 
-                                        clickedItem.dismiss();
+                                        dialog2.dismiss();
                                         longClick = false;
                                         saveEquipment();
 
@@ -1012,88 +908,66 @@ public class EquipmentActivity extends AppCompatActivity {
                                         }
                                     }, 500);
 
-                                //If clicked item type is helmet
+
                                 } else if (subtypesFew[position].equals("helmet")) {
 
-                                    //If there is no helmet equipped
                                     if (helmet_temp == 0) {
-
                                         player_eq_helmet = Integer.parseInt(idsDepotFew[position]);
                                         saveEquipment();
-
-                                        //If only one item exist in depot
                                         if (Integer.parseInt(quantityDepotFew[position]) == 1) {
-
                                             deleteItem(id_player, idsDepotFew[position]);
-
                                         } else {
-
                                             for (int i = 0; i < idsDepot.length; i++) {
-
                                                 if (player_eq_helmet == Integer.parseInt(idsDepot[i])) {
                                                     updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]), (Integer.parseInt(quantityDepot[i]) - 1));
                                                     break;
-
                                                 }
                                             }
                                         }
-
-                                        clickedItem.dismiss();
+                                        dialog2.dismiss();
                                         helmet_temp = 1;
                                         longClick = false;
-
                                     } else {
-
                                         int temp = player_eq_helmet;
                                         player_eq_helmet = Integer.parseInt(idsDepotFew[position]);
 
                                         if (temp != player_eq_helmet) {
 
                                             if (Integer.parseInt(quantityDepotFew[position]) > 1) {
-
                                                 updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]),
                                                         (Integer.parseInt(quantityDepotFew[position]) - 1));
-
-                                                boolean notExistInDepot = true;
+                                                boolean ty = true;
 
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        ty = false;
                                                         break;
-
                                                     }
                                                 }
-
-                                                if (notExistInDepot == true) {
+                                                if (ty == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
 
                                             } else {
-
-                                                boolean notExistInDepot = true;
+                                                boolean tu = true;
                                                 deleteItem(id_player, Integer.toString(player_eq_helmet));
-
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        tu = false;
                                                         break;
-
                                                     }
                                                 }
-                                                if (notExistInDepot == true) {
+                                                if (tu == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
+
 
                                             }
                                         }
 
-                                        clickedItem.dismiss();
+                                        dialog2.dismiss();
                                         longClick = false;
                                         saveEquipment();
 
@@ -1108,90 +982,69 @@ public class EquipmentActivity extends AppCompatActivity {
                                         }
                                     }, 500);
 
-                                //If clicked item type is armor
+
                                 } else if (subtypesFew[position].equals("armor")) {
 
-                                    //If there is no weapon equipped
-                                    if (armor_temp == 0) {
 
+                                    if (armor_temp == 0) {
                                         player_eq_armor = Integer.parseInt(idsDepotFew[position]);
                                         saveEquipment();
-
-                                        //If only one item exist in depot
                                         if (Integer.parseInt(quantityDepotFew[position]) == 1) {
-
                                             deleteItem(id_player, idsDepotFew[position]);
-
                                         } else {
-
                                             for (int i = 0; i < idsDepot.length; i++) {
-
                                                 if (player_eq_armor == Integer.parseInt(idsDepot[i])) {
                                                     updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]), (Integer.parseInt(quantityDepot[i]) - 1));
                                                     break;
-
                                                 }
                                             }
-
                                         }
 
-                                        clickedItem.dismiss();
+                                        dialog2.dismiss();
                                         armor_temp = 1;
                                         longClick = false;
-
                                     } else {
-
                                         int temp = player_eq_armor;
                                         player_eq_armor = Integer.parseInt(idsDepotFew[position]);
 
                                         if (temp != player_eq_armor) {
 
                                             if (Integer.parseInt(quantityDepotFew[position]) > 1) {
-
                                                 updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]),
                                                         (Integer.parseInt(quantityDepotFew[position]) - 1));
-
-                                                boolean notExistInDepot = true;
+                                                boolean ty = true;
 
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        ty = false;
                                                         break;
-
                                                     }
                                                 }
-
-                                                if (notExistInDepot == true) {
+                                                if (ty == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
 
                                             } else {
-
-                                                boolean notExistInDepot = true;
+                                                boolean tu = true;
                                                 deleteItem(id_player, Integer.toString(player_eq_armor));
-
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        tu = false;
                                                         break;
-
                                                     }
                                                 }
-
-                                                if (notExistInDepot == true) {
+                                                if (tu == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
+
 
                                             }
                                         }
 
-                                        clickedItem.dismiss();
+
+                                        dialog2.dismiss();
                                         longClick = false;
                                         saveEquipment();
 
@@ -1206,90 +1059,66 @@ public class EquipmentActivity extends AppCompatActivity {
                                         }
                                     }, 500);
 
-                                //If clicked item type is legs
+
                                 } else if (subtypesFew[position].equals("legs")) {
 
-                                    //If there are no legs equipped
                                     if (legs_temp == 0) {
-
                                         player_eq_legs = Integer.parseInt(idsDepotFew[position]);
                                         saveEquipment();
-
-                                        //If only one item exist in depot
                                         if (Integer.parseInt(quantityDepotFew[position]) == 1) {
-
                                             deleteItem(id_player, idsDepotFew[position]);
-
                                         } else {
-
                                             for (int i = 0; i < idsDepot.length; i++) {
-
                                                 if (player_eq_legs == Integer.parseInt(idsDepot[i])) {
                                                     updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]), (Integer.parseInt(quantityDepot[i]) - 1));
                                                     break;
                                                 }
-
                                             }
                                         }
-
-                                        clickedItem.dismiss();
+                                        dialog2.dismiss();
                                         legs_temp = 1;
                                         longClick = false;
-
                                     } else {
-
                                         int temp = player_eq_legs;
                                         player_eq_legs = Integer.parseInt(idsDepotFew[position]);
 
                                         if (temp != player_eq_legs) {
 
                                             if (Integer.parseInt(quantityDepotFew[position]) > 1) {
-
                                                 updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]),
                                                         (Integer.parseInt(quantityDepotFew[position]) - 1));
-
-                                                boolean notExistInDepot = true;
+                                                boolean ty = true;
 
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        ty = false;
                                                         break;
-
                                                     }
                                                 }
-
-                                                if (notExistInDepot == true) {
+                                                if (ty == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
 
                                             } else {
-
-                                                boolean notExistInDepot = true;
+                                                boolean tu = true;
                                                 deleteItem(id_player, Integer.toString(player_eq_legs));
-
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        tu = false;
                                                         break;
-
                                                     }
-
                                                 }
-
-                                                if (notExistInDepot == true) {
+                                                if (tu == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
+
 
                                             }
                                         }
 
-                                        clickedItem.dismiss();
+                                        dialog2.dismiss();
                                         longClick = false;
                                         saveEquipment();
 
@@ -1304,89 +1133,65 @@ public class EquipmentActivity extends AppCompatActivity {
                                         }
                                     }, 500);
 
-                                //If clicked item type is boots
                                 } else if (subtypesFew[position].equals("boots")) {
 
-                                    //If there are no boots equipped
                                     if (boots_temp == 0) {
-
                                         player_eq_boots = Integer.parseInt(idsDepotFew[position]);
                                         saveEquipment();
-
-                                        //If only one item exist in depot
                                         if (Integer.parseInt(quantityDepotFew[position]) == 1) {
-
                                             deleteItem(id_player, idsDepotFew[position]);
-
                                         } else {
-
                                             for (int i = 0; i < idsDepot.length; i++) {
-
                                                 if (player_eq_boots == Integer.parseInt(idsDepot[i])) {
                                                     updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]), (Integer.parseInt(quantityDepot[i]) - 1));
                                                     break;
                                                 }
-
                                             }
                                         }
-
-                                        clickedItem.dismiss();
+                                        dialog2.dismiss();
                                         helmet_temp = 1;
                                         longClick = false;
-
                                     } else {
-
                                         int temp = player_eq_boots;
                                         player_eq_boots = Integer.parseInt(idsDepotFew[position]);
 
                                         if (temp != player_eq_boots) {
 
                                             if (Integer.parseInt(quantityDepotFew[position]) > 1) {
-
                                                 updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]),
                                                         (Integer.parseInt(quantityDepotFew[position]) - 1));
-
-                                                boolean notExistInDepot = true;
+                                                boolean ty = true;
 
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        ty = false;
                                                         break;
-
                                                     }
                                                 }
-
-                                                if (notExistInDepot == true) {
+                                                if (ty == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
 
                                             } else {
-
-                                                boolean notExistInDepot = true;
+                                                boolean tu = true;
                                                 deleteItem(id_player, Integer.toString(player_eq_boots));
-
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        tu = false;
                                                         break;
-
                                                     }
                                                 }
-
-                                                if (notExistInDepot == true) {
+                                                if (tu == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
+
 
                                             }
                                         }
 
-                                        clickedItem.dismiss();
+                                        dialog2.dismiss();
                                         longClick = false;
                                         saveEquipment();
 
@@ -1401,90 +1206,66 @@ public class EquipmentActivity extends AppCompatActivity {
                                         }
                                     }, 500);
 
-                                ////If clicked item type is amulet
+
                                 } else if (subtypesFew[position].equals("amulet")) {
 
-                                    //If there is no amulet equipped
                                     if (amulet_temp == 0) {
-
                                         player_eq_amulet = Integer.parseInt(idsDepotFew[position]);
                                         saveEquipment();
-
-                                        //If only one item exist in depot
                                         if (Integer.parseInt(quantityDepotFew[position]) == 1) {
-
                                             deleteItem(id_player, idsDepotFew[position]);
-
                                         } else {
-
                                             for (int i = 0; i < idsDepot.length; i++) {
-
                                                 if (player_eq_amulet == Integer.parseInt(idsDepot[i])) {
-
                                                     updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]), (Integer.parseInt(quantityDepot[i]) - 1));
                                                     break;
-
                                                 }
                                             }
                                         }
-
-                                        clickedItem.dismiss();
+                                        dialog2.dismiss();
                                         amulet_temp = 1;
                                         longClick = false;
-
                                     } else {
-
                                         int temp = player_eq_amulet;
                                         player_eq_amulet = Integer.parseInt(idsDepotFew[position]);
 
                                         if (temp != player_eq_amulet) {
 
                                             if (Integer.parseInt(quantityDepotFew[position]) > 1) {
-
                                                 updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]),
                                                         (Integer.parseInt(quantityDepotFew[position]) - 1));
-
-                                                boolean notExistInDepot = true;
+                                                boolean ty = true;
 
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        ty = false;
                                                         break;
-
                                                     }
                                                 }
-
-                                                if (notExistInDepot == true) {
+                                                if (ty == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
 
                                             } else {
-
-                                                boolean notExistInDepot = true;
+                                                boolean tu = true;
                                                 deleteItem(id_player, Integer.toString(player_eq_amulet));
-
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                        notExistInDepot = false;
+                                                        tu = false;
                                                         break;
-
                                                     }
                                                 }
-
-                                                if (notExistInDepot == true) {
+                                                if (tu == true) {
                                                     insertItemDepot(id_player, temp, 1);
                                                 }
+
 
                                             }
                                         }
 
-                                        clickedItem.dismiss();
+                                        dialog2.dismiss();
                                         longClick = false;
                                         saveEquipment();
 
@@ -1500,115 +1281,83 @@ public class EquipmentActivity extends AppCompatActivity {
                                     }, 500);
 
                                 }
-
-                            //If clicked item type is ring
                             } else {
+                                final Dialog dialog3 = new Dialog(EquipmentActivity.this);
+                                dialog3.setTitle("Sell");
+                                dialog3.setContentView(R.layout.popup_equip_ring);
+                                dialog3.show();
+                                dialog3.setCancelable(false);
+                                dialog3.setCanceledOnTouchOutside(false);
+                                dialog2.dismiss();
 
-                                final Dialog clickedItemRing = new Dialog(EquipmentActivity.this);
-                                clickedItemRing.setContentView(R.layout.popup_equip_ring);
-                                clickedItemRing.show();
-                                clickedItemRing.setCancelable(false);
-                                clickedItemRing.setCanceledOnTouchOutside(false);
-                                clickedItem.dismiss();
+                                Button left = (Button) dialog3.findViewById(R.id.equipLeft);
+                                Button right = (Button) dialog3.findViewById(R.id.equipRight);
+                                Button backEq = (Button) dialog3.findViewById(R.id.back);
 
-                                Button left = (Button) clickedItemRing.findViewById(R.id.equipLeft);
-                                Button right = (Button) clickedItemRing.findViewById(R.id.equipRight);
-                                Button backEq = (Button) clickedItemRing.findViewById(R.id.back);
-
-                                //Change font of buttons
-                                Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                                left.setTypeface(type);
-                                right.setTypeface(type);
-                                backEq.setTypeface(type);
-
-                                //If left button is clicked
                                 left.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
 
-                                        //If there is no ring on left slot
                                         if (ring_left_temp == 0) {
-
                                             player_eq_ring_left = Integer.parseInt(idsDepotFew[position]);
                                             saveEquipment();
-
-                                            //If only one item exist in depot
                                             if (Integer.parseInt(quantityDepotFew[position]) == 1) {
-
                                                 deleteItem(id_player, idsDepotFew[position]);
-
                                             } else {
-
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (player_eq_ring_left == Integer.parseInt(idsDepot[i])) {
                                                         updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]), (Integer.parseInt(quantityDepot[i]) - 1));
                                                         break;
-
                                                     }
                                                 }
-
                                             }
-
-                                            clickedItem.dismiss();
-                                            clickedItemRing.dismiss();
+                                            dialog2.dismiss();
+                                            dialog3.dismiss();
                                             ring_left_temp = 1;
                                             longClick = false;
-
                                         } else {
-
                                             int temp = player_eq_ring_left;
                                             player_eq_ring_left = Integer.parseInt(idsDepotFew[position]);
 
                                             if (temp != player_eq_ring_left) {
 
                                                 if (Integer.parseInt(quantityDepotFew[position]) > 1) {
-
                                                     updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]),
                                                             (Integer.parseInt(quantityDepotFew[position]) - 1));
-
-                                                    boolean notExistInDepot = true;
+                                                    boolean ty = true;
 
                                                     for (int i = 0; i < idsDepot.length; i++) {
-
                                                         if (temp == Integer.parseInt(idsDepot[i])) {
                                                             updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
 
-                                                            notExistInDepot = false;
+                                                            ty = false;
                                                             break;
-
                                                         }
                                                     }
-
-                                                    if (notExistInDepot == true) {
+                                                    if (ty == true) {
                                                         insertItemDepot(id_player, temp, 1);
                                                     }
 
                                                 } else {
-
-                                                    boolean notExistInDepot = true;
+                                                    boolean tu = true;
                                                     deleteItem(id_player, Integer.toString(player_eq_ring_left));
-
                                                     for (int i = 0; i < idsDepot.length; i++) {
-
                                                         if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                             updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                            notExistInDepot = false;
+                                                            tu = false;
                                                             break;
-
                                                         }
                                                     }
-
-                                                    if (notExistInDepot == true) {
+                                                    if (tu == true) {
                                                         insertItemDepot(id_player, temp, 1);
                                                     }
+
 
                                                 }
                                             }
 
-                                            clickedItem.dismiss();
-                                            clickedItemRing.dismiss();
+                                            dialog2.dismiss();
+                                            dialog3.dismiss();
                                             longClick = false;
                                             saveEquipment();
 
@@ -1623,100 +1372,78 @@ public class EquipmentActivity extends AppCompatActivity {
                                             }
                                         }, 500);
 
+
                                     }
                                 });
 
-                                //If right button is clicked
                                 right.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
 
-                                        //If there is no ring in right slot
                                         if (ring_right_temp == 0) {
-
                                             player_eq_ring_right = Integer.parseInt(idsDepotFew[position]);
                                             saveEquipment();
-
-                                            //If only one item exist in depot
                                             if (Integer.parseInt(quantityDepotFew[position]) == 1) {
-
                                                 deleteItem(id_player, idsDepotFew[position]);
-
                                             } else {
-
                                                 for (int i = 0; i < idsDepot.length; i++) {
-
                                                     if (player_eq_ring_right == Integer.parseInt(idsDepot[i])) {
-
                                                         updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]), (Integer.parseInt(quantityDepot[i]) - 1));
                                                         break;
-
                                                     }
                                                 }
                                             }
-
-                                            clickedItem.dismiss();
-                                            clickedItemRing.dismiss();
+                                            dialog2.dismiss();
+                                            dialog3.dismiss();
                                             ring_left_temp = 1;
                                             longClick = false;
-
                                         } else {
-
                                             int temp = player_eq_ring_right;
                                             player_eq_ring_right = Integer.parseInt(idsDepotFew[position]);
 
                                             if (temp != player_eq_ring_right) {
 
                                                 if (Integer.parseInt(quantityDepotFew[position]) > 1) {
-
                                                     updateItemDepot(id_player, Integer.parseInt(idsDepotFew[position]),
                                                             (Integer.parseInt(quantityDepotFew[position]) - 1));
-
-                                                    boolean notExistInDepot = true;
+                                                    boolean ty = true;
 
                                                     for (int i = 0; i < idsDepot.length; i++) {
                                                         if (temp == Integer.parseInt(idsDepot[i])) {
                                                             updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                            notExistInDepot = false;
+                                                            ty = false;
                                                             break;
                                                         }
                                                     }
-
-                                                    if (notExistInDepot == true) {
+                                                    if (ty == true) {
                                                         insertItemDepot(id_player, temp, 1);
                                                     }
 
                                                 } else {
-
-                                                    boolean notExistInDepot = true;
+                                                    boolean tu = true;
                                                     deleteItem(id_player, Integer.toString(player_eq_ring_right));
-
                                                     for (int i = 0; i < idsDepot.length; i++) {
-
                                                         if (temp == Integer.parseInt(idsDepot[i])) {
-
                                                             wait = true;
                                                             updateItemDepot(id_player, temp, (Integer.parseInt(quantityDepot[i]) + 1));
-                                                            notExistInDepot = false;
+                                                            tu = false;
                                                             break;
-
                                                         }
                                                     }
-
-                                                    if (notExistInDepot == true) {
+                                                    if (tu == true) {
                                                         insertItemDepot(id_player, temp, 1);
                                                     }
+
 
                                                 }
                                             }
 
-                                            clickedItem.dismiss();
-                                            clickedItemRing.dismiss();
+                                            dialog2.dismiss();
+                                            dialog3.dismiss();
                                             longClick = false;
                                             saveEquipment();
 
                                         }
-
                                         final Handler handler = new Handler();
                                         handler.postDelayed(new Runnable() {
                                             @Override
@@ -1726,13 +1453,15 @@ public class EquipmentActivity extends AppCompatActivity {
                                             }
                                         }, 500);
 
+
                                     }
                                 });
+
 
                                 backEq.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        clickedItemRing.dismiss();
+                                        dialog3.dismiss();
                                         longClick = false;
                                     }
                                 });
@@ -1744,17 +1473,18 @@ public class EquipmentActivity extends AppCompatActivity {
                     back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            clickedItem.dismiss();
+                            dialog2.dismiss();
                             longClick = false;
                         }
                     });
                 }
-
                 return false;
 
         }
 
         });
+
+
 
         //Set format for double numbers
         final NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
@@ -1765,10 +1495,8 @@ public class EquipmentActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                if (longClick == false && !ConfigDepot.images[0].equals("null")) {
-
+                if (longClick == false && ConfigDepot.images != null) {
                     if (imagesDepotFew[position] != null) {
-
                         if (Integer.parseInt(quantityDepotFew[position]) > 1 && !imagesDepotFew[position].equals("fish_img")
                                 && (typesDepotFew[position].equals("other") || typesDepotFew[position].equals("creature_product"))){
 
@@ -1779,7 +1507,6 @@ public class EquipmentActivity extends AppCompatActivity {
                                         Toast.LENGTH_LONG).show();
 
                             }
-
                         } else if (imagesDepotFew[position].equals("fish_img") && Integer.parseInt(quantityDepotFew[position]) > 1) {
 
                             if (imagesDepotFew[position] != null) {
@@ -1789,7 +1516,6 @@ public class EquipmentActivity extends AppCompatActivity {
                                         Toast.LENGTH_LONG).show();
 
                             }
-
                         } else {
 
                             if (imagesDepotFew[position] != null) {
@@ -1847,7 +1573,6 @@ public class EquipmentActivity extends AppCompatActivity {
 
     }
 
-    //Display number of health and mana potions
     public void eq() {
 
         TextView hp = (TextView) findViewById(R.id.textViewHp);
@@ -1871,7 +1596,6 @@ public class EquipmentActivity extends AppCompatActivity {
                 showJSON(response);
                 getImages();
                 eq();
-                getAll();
 
             }
         },
@@ -1892,9 +1616,7 @@ public class EquipmentActivity extends AppCompatActivity {
         String  playerHealthPotions = "", playerManaPotions = "", playerGold = "", playerEqHelmet = "",
                 playerEqArmor = "", playerEqLegs = "", playerEqBoots = "", playerEqWeapon = "",
                 playerEqShield = "", playerEqRingLeft = "", playerEqRingRight = "", playerEqAmulet = "";
-
         try {
-
             JSONObject jsonObject = new JSONObject(json);
             JSONArray result = jsonObject.getJSONArray(ConfigPlayerID.JSON_ARRAY);//name of class
             JSONObject collegeData = result.getJSONObject(0);
@@ -2354,8 +2076,7 @@ public class EquipmentActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(EquipmentActivity.this, "Weak network signal. Please try again.", Toast.LENGTH_LONG).show();
-                        loadingGetAll.dismiss();
+                        Toast.makeText(EquipmentActivity.this, error.getMessage().toString(), Toast.LENGTH_LONG).show();
                     }
                 });
 
@@ -2372,7 +2093,8 @@ public class EquipmentActivity extends AppCompatActivity {
         GridView grid = (GridView) findViewById(R.id.gridView);
 
 
-        if(!ConfigDepot.images[0].equals("null")) {
+        if(ConfigDepot.images != null)
+        {
             imagesDepot = new String[ConfigDepot.images.length];
             typesDepot = new String[ConfigDepot.types.length];
             descriptionsDepot = new String[ConfigDepot.descriptions.length];
@@ -2407,7 +2129,7 @@ public class EquipmentActivity extends AppCompatActivity {
                 weightDepot[i] = ConfigDepot.weight[i];
                 namesDepot[i] = ConfigDepot.names[i];
                 idsDepot[i] = ConfigDepot.ids[i];
-                subtypes[i] = ConfigDepot.subtypes[i];
+                //subtypes[i] = ConfigDepot.subtypes[i];
                 quant += Integer.parseInt(quantityDepot[i]);
 
             }
@@ -2578,8 +2300,8 @@ public class EquipmentActivity extends AppCompatActivity {
         requestQueue.add(request);
         wait = false;
 
-    }
 
+    }
 
 }
 
