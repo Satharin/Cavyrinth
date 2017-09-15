@@ -2,7 +2,7 @@ package com.example.rafal.gra;
 
 public class ConfigPlayerID {
 
-    public static final String DATA_URL = "http://testcase.net23.net/getPlayerID.php?name=";
+    public static final String DATA_URL = "https://mundial2018.000webhostapp.com/getPlayerID.php?name=";
     public static final String KEY_ID = "id_player";
     public static final String KEY_NAME = "name";
     public static final String KEY_HP = "hp";
@@ -36,5 +36,6 @@ public class ConfigPlayerID {
     public static final String KEY_HEALTH_POTIONS = "health_potions";
     public static final String KEY_MANA_POTIONS = "mana_potions";
     public static final String JSON_ARRAY = "result";
+
 }
 
