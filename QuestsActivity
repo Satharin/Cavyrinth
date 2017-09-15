@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -28,25 +27,6 @@ public class QuestsActivity extends AppCompatActivity {
         Button startGoblinMage = (Button) findViewById(R.id.startMage);
         Button startFireDragon = (Button) findViewById(R.id.startFire);
         Button startWaterDragon = (Button) findViewById(R.id.startWater);
-        Button exitButton = (Button) findViewById(R.id.exit);
-
-        TextView warriorText = (TextView) findViewById(R.id.textViewWarrior);
-        TextView mageText = (TextView) findViewById(R.id.textViewMage);
-        TextView fireText = (TextView) findViewById(R.id.textViewFire);
-        TextView waterText = (TextView) findViewById(R.id.textViewWater);
-        TextView statusText = (TextView) findViewById(R.id.textViewStatus);
-
-        Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-        startGoblinWarrior.setTypeface(type);
-        startGoblinMage.setTypeface(type);
-        startFireDragon.setTypeface(type);
-        startWaterDragon.setTypeface(type);
-        exitButton.setTypeface(type);
-        warriorText.setTypeface(type);
-        mageText.setTypeface(type);
-        fireText.setTypeface(type);
-        waterText.setTypeface(type);
-        statusText.setTypeface(type);
 
         TextView status = (TextView) findViewById(R.id.textViewStatus);
 
@@ -334,6 +314,7 @@ public class QuestsActivity extends AppCompatActivity {
                 .create();
 
         start.show();
+
     }
 
 
