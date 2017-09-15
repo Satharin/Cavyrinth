@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -38,14 +37,7 @@ public class SkillsActivity extends AppCompatActivity {
 
     private ProgressDialog loadingGetPlayerId;
 
-    private Button backButton, resetButton, hpButton, mpButton, atkButton, defButton, critButton,
-                    critChanceButton;
-
-    private TextView textViewSP, textViewHp, textViewMp, textViewCrit, textViewCritChance,
-                        textViewAtk, textViewDef, textViewHp2, textViewMp2, textViewCrit2,
-                        textViewAtk2, textViewDef2, textViewCritChance2;
-
-    public static final String URL = "http://testcase.net23.net/saveSkills.php";
+    public static final String URL = "https://mundial2018.000webhostapp.com/saveSkills.php";
 
     RequestQueue requestQueue;
 
@@ -55,54 +47,7 @@ public class SkillsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_skills);
 
-        backButton = (Button) findViewById(R.id.exit);
-        resetButton = (Button) findViewById(R.id.resetsp);
-        hpButton = (Button) findViewById(R.id.addHp);
-        mpButton = (Button) findViewById(R.id.addMana);
-        atkButton = (Button) findViewById(R.id.addAtk);
-        defButton = (Button) findViewById(R.id.addDef);
-        critButton = (Button) findViewById(R.id.addCrit);
-        critChanceButton = (Button) findViewById(R.id.addCritChance);
-
-        textViewSP = (TextView) findViewById(R.id.textViewSP);
-        textViewHp = (TextView) findViewById(R.id.textViewHealth);
-        textViewMp = (TextView) findViewById(R.id.textViewManaP);
-        textViewAtk = (TextView) findViewById(R.id.textViewAttack);
-        textViewDef = (TextView) findViewById(R.id.textViewDefence);
-        textViewCrit = (TextView) findViewById(R.id.textViewCrit2);
-        textViewCritChance = (TextView) findViewById(R.id.textViewCritChan);
-        textViewHp2 = (TextView) findViewById(R.id.textViewHp);
-        textViewMp2 = (TextView) findViewById(R.id.textViewManaPoints);
-        textViewCrit2 = (TextView) findViewById(R.id.textViewSellFew);
-        textViewAtk2 = (TextView) findViewById(R.id.textViewAtk);
-        textViewDef2 = (TextView) findViewById(R.id.textViewDef);
-        textViewCritChance2 = (TextView) findViewById(R.id.textViewCritChance);
-
-
-        Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-        backButton.setTypeface(type);
-        resetButton.setTypeface(type);
-        hpButton.setTypeface(type);
-        mpButton.setTypeface(type);
-        atkButton.setTypeface(type);
-        defButton.setTypeface(type);
-        critButton.setTypeface(type);
-        critChanceButton.setTypeface(type);
-        textViewSP.setTypeface(type);
-        textViewHp.setTypeface(type);
-        textViewMp.setTypeface(type);
-        textViewAtk.setTypeface(type);
-        textViewDef.setTypeface(type);
-        textViewCrit.setTypeface(type);
-        textViewCritChance.setTypeface(type);
-        textViewHp2.setTypeface(type);
-        textViewMp2.setTypeface(type);
-        textViewAtk2.setTypeface(type);
-        textViewDef2.setTypeface(type);
-        textViewCrit2.setTypeface(type);
-        textViewCritChance2.setTypeface(type);
-
-        requestQueue = Volley.newRequestQueue(getApplicationContext());
+            requestQueue = Volley.newRequestQueue(getApplicationContext());
 
         //Display skills
         loadGame();
@@ -294,7 +239,7 @@ public class SkillsActivity extends AppCompatActivity {
         player_skill_points -= 1;
         used_critical_sp += 1;
 
-        TextView addCrit = (TextView) findViewById(R.id.textViewSellFew);
+        TextView addCrit = (TextView) findViewById(R.id.textViewCrit);
         StringBuilder crit = new StringBuilder("");
         crit.append("Crit. hit % \n");
         crit.append("Current: " + Integer.toString(player_critical) + "\n");
@@ -391,7 +336,7 @@ public class SkillsActivity extends AppCompatActivity {
         player_critical -= used_critical_sp;
         used_critical_sp = 0;
 
-        TextView addCrit = (TextView) findViewById(R.id.textViewSellFew);
+        TextView addCrit = (TextView) findViewById(R.id.textViewCrit);
         StringBuilder crit = new StringBuilder("");
         crit.append("Crit. hit % \n");
         crit.append("Current: " + Integer.toString(player_critical) + "\n");
@@ -451,7 +396,7 @@ public class SkillsActivity extends AppCompatActivity {
         def.append("Used SP: " + Integer.toString(used_defence_sp));
         addDef.setText(def);
 
-        TextView addCrit = (TextView) findViewById(R.id.textViewSellFew);
+        TextView addCrit = (TextView) findViewById(R.id.textViewCrit);
         StringBuilder crit = new StringBuilder("");
         crit.append("Current: " + Integer.toString(player_critical) + "\n");
         crit.append("Next: " + Integer.toString((player_critical + 1)) + "\n");
@@ -607,6 +552,7 @@ public class SkillsActivity extends AppCompatActivity {
         };
 
         requestQueue.add(request);
+
     }
 
 }
