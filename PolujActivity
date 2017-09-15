@@ -3,7 +3,6 @@ package com.example.rafal.gra;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,22 +10,11 @@ import android.widget.Button;
 
 public class PolujActivity extends AppCompatActivity {
 
-    private Button goblinsButton, dragonsButton, backButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_poluj);
-
-        goblinsButton = (Button) findViewById(R.id.goblins);
-        dragonsButton = (Button) findViewById(R.id.dragons);
-        backButton = (Button) findViewById(R.id.buttonBack);
-
-        Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-        goblinsButton.setTypeface(type);
-        dragonsButton.setTypeface(type);
-        backButton.setTypeface(type);
 
     }
 
@@ -80,6 +68,7 @@ public class PolujActivity extends AppCompatActivity {
 
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
         finish();
+
     }
 
 }
