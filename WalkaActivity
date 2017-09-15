@@ -6,15 +6,11 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -31,13 +27,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class WalkaActivity extends AppCompatActivity {
@@ -45,20 +39,19 @@ public class WalkaActivity extends AppCompatActivity {
     //Temporary monster
     Monsters  monster;
 
-    public static String[] lootItems, lootIds, lootImages, lootDescriptions, lootTypes, lootWeights,
-                            lootQuantities, lootItems2, lootIds2, lootImages2, lootDescriptions2, lootTypes2,
-                            lootWeights2, lootQuantities2;
+    public static String[] lootItems;
+    public static String[] lootIds;
 
-    String URL_SAVE_LOOT = "http://testcase.net23.net/saveLoot.php";
-    String URL_SAVE_SAME_LOOT = "http://testcase.net23.net/saveSameLoot.php";
-    String URL_CHECK_ITEM_EXIST = "http://testcase.net23.net/checkItemExist.php?id_player=";
-    public static final String URL_SAVE_SKILLS = "http://testcase.net23.net/saveSkillsWalka.php";
-    public static final String DATA_URL_LOOT = "http://testcase.net23.net/getLootByMonsterID.php?id=";
+    String URL_SAVE_LOOT = "https://mundial2018.000webhostapp.com/saveLoot.php";
+    String URL_SAVE_SAME_LOOT = "https://mundial2018.000webhostapp.com/saveSameLoot.php";
+    String URL_CHECK_ITEM_EXIST = "https://mundial2018.000webhostapp.com/checkItemExist.php?id_player=";
+    public static final String URL_SAVE_SKILLS = "https://mundial2018.000webhostapp.com/saveSkillsWalka.php";
+    public static final String DATA_URL_LOOT = "https://mundial2018.000webhostapp.com/getLootByMonsterID.php?id=";
 
     private ProgressDialog loadingGetData, loadingGetPlayerId;
 
     int  killedGoblinWarrior, killedGoblinMage, killedFireDragon, killedWaterDragon, questStarted,
-            check_quantity, imageID, quantityLoot;
+            check_quantity;
 
     int player_hp, player_mp, player_attack, player_defence, player_gold, player_skill_points,
             player_health_potions, player_mana_potions, player_critical, player_critical_chance,
@@ -75,9 +68,7 @@ public class WalkaActivity extends AppCompatActivity {
             currentMoney = player_gold, afterRun = 0, roundNumber = 1,
             playerHpTemp, playerManaTemp, checkLvlAdvance, checkMlvlAdvance, round = 0, firstAttackSpell = 0,
             monsterHpTemp, monsterAtk, monsterDef, monsterExp, monsterGoldMax;
-
     double loot, youHit, mobHit;
-
     boolean slaying;
 
     ArrayList<Integer> expTable = new ArrayList<Integer>();
@@ -101,29 +92,10 @@ public class WalkaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_walka);
 
-        Button explore = (Button) findViewById(R.id.explore);
-        Button escape = (Button) findViewById(R.id.escape);
         Button fight = (Button) findViewById(R.id.fight);
         Button spell = (Button) findViewById(R.id.spell);
         Button heal = (Button) findViewById(R.id.heal);
         Button potions = (Button) findViewById(R.id.potions);
-
-        TextView hpPlayer = (TextView) findViewById(R.id.textViewHp);
-        TextView mpPlayer = (TextView) findViewById(R.id.textViewManaP);
-        TextView hpMonster = (TextView) findViewById(R.id.textViewMonster);
-        TextView monsterName = (TextView) findViewById(R.id.monsterName);
-
-        Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-        explore.setTypeface(type);
-        escape.setTypeface(type);
-        fight.setTypeface(type);
-        spell.setTypeface(type);
-        heal.setTypeface(type);
-        potions.setTypeface(type);
-        hpPlayer.setTypeface(type);
-        mpPlayer.setTypeface(type);
-        hpMonster.setTypeface(type);
-        monsterName.setTypeface(type);
 
         //Action after pressing button Potions
         potions.setOnClickListener(new View.OnClickListener() {
@@ -140,10 +112,6 @@ public class WalkaActivity extends AppCompatActivity {
                 Button mp = (Button) dialog.findViewById(R.id.mpotion);
                 hp.setText("HP: " + Integer.toString(player_health_potions));
                 mp.setText("MP: " + Integer.toString(player_mana_potions));
-
-                Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                hp.setTypeface(type);
-                mp.setTypeface(type);
 
                 //Check amount of potions, health and mana potions of character and grey out buttons
                 if (player_health_potions == 0) {
@@ -318,7 +286,7 @@ public class WalkaActivity extends AppCompatActivity {
 
             double crit = Math.floor((player_attack * 2 - player_attack / 2 + 1) + player_attack / 2 - monster.def) +
                     (Math.floor((player_attack * 2 - player_attack / 2 + 1) + player_attack / 2 - monster.def) * (player_critical / 100));
-            youHit = (Math.floor(Math.random() * (player_attack * 2 - player_attack / 2 + 1)) + player_attack / 2 - monster.def);
+            youHit = (Math.floor(Math.random() * (player_attack * 10 - player_attack / 2 + 1)) + player_attack / 2 - monster.def);
             mobHit = Math.floor((Math.random() * 2) * (monster.atk * 2 - (player_defence / 2)));
 
             if (mobHit < 0) {
@@ -479,38 +447,17 @@ public class WalkaActivity extends AppCompatActivity {
         pj.GetLoot();
         lootItems = new String[GetLoot.items.length];
         lootIds = new String[GetLoot.ids.length];
-        lootImages = new String[GetLoot.images.length];
-        lootDescriptions = new String[GetLoot.descriptions.length];
-        lootTypes = new String[GetLoot.types.length];
-        lootWeights = new String[GetLoot.weights.length];
-        lootQuantities = new String[GetLoot.quantities.length];
 
         for (int i = 0; i < GetLoot.items.length; i++) {
 
             int rarityChance = Integer.parseInt(GetLoot.chances[i]);
             int randomNumber = randomWithRange(0, 300); //loot chance
-            int randomQuantity = randomWithRange(2, Integer.parseInt(GetLoot.quantities[i]));
-
             if (randomNumber <= rarityChance) {
-
                 lootItems[i] = GetLoot.items[i];
                 lootIds[i] = GetLoot.ids[i];
-                lootImages[i] = GetLoot.images[i];
-                lootDescriptions[i] = GetLoot.descriptions[i];
-                lootTypes[i] = GetLoot.types[i];
-                lootWeights[i] = GetLoot.weights[i];
-                lootQuantities[i] = Integer.toString(randomQuantity);
-
             } else {
-
                 lootItems[i] = "";
                 lootIds[i] = "";
-                lootImages[i] = "empty";
-                lootDescriptions[i] = "";
-                lootTypes[i] = "";
-                lootWeights[i] = "";
-                lootQuantities[i] = "";
-
             }
 
         }
@@ -864,12 +811,9 @@ public class WalkaActivity extends AppCompatActivity {
 
             //If player die
             if (playerHpTemp <= 0) {
-
                 if (player_experience > 0) {
-
                     double loseExp = (Math.floor(player_experience * 0.2));
                     double loseMexp = (Math.floor(player_magic_experience * 0.23));
-
                     fightWindow.append("You are dead. \nYou lost " + (int) loseExp + " experience.");
                     player_experience -= (int) loseExp;
                     if (player_magic_experience >= (int) loseMexp) {
@@ -900,13 +844,12 @@ public class WalkaActivity extends AppCompatActivity {
 
                 fightTextView.setText(fightWindow);
 
-            //If monster die
+                //If monster die
             } else if (monsterHpTemp <= 0) {
                 List<String> list = new ArrayList<String>(Arrays.asList(lootItems));
                 list.removeAll(Collections.singleton(""));
                 List<String> ids = new ArrayList<String>(Arrays.asList(lootIds));
                 ids.removeAll(Collections.singleton(""));
-
                 if (list.isEmpty()) {
                     fightWindow.append("You have defeated " + monster.name + "!" + "\n" + "You have received:" +
                             "\n" + monster.exp + " experience" + "\n" + "Loot: " + (int) loot + " gold " +
@@ -916,124 +859,11 @@ public class WalkaActivity extends AppCompatActivity {
                             "\n" + monster.exp + " experience" + "\n" + "Loot: " + (int) loot + " gold, " +
                             list.toString().replace("[", "").replace("]", "")+ "\n");
 
-                    //Display dialog with gold and loot
-                    final Dialog dialog = new Dialog(WalkaActivity.this);
-                    dialog.setContentView(R.layout.popup_loot);
-
-                    dialog.setCancelable(true);
-                    dialog.setCanceledOnTouchOutside(true);
-
-                    final GridView grid = (GridView) dialog.findViewById(R.id.lootGridView);
-                    grid.setAdapter(new ImageAdapterLoot(this));
-
-                    TextView loot = (TextView) dialog.findViewById(R.id.lootTextView);
-                    Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-                    loot.setTypeface(type);
-
-                    int k = 0;
-
-                    lootItems2 = new String[ids.size()];
-                    lootIds2 = new String[ids.size()];
-                    lootImages2 = new String[ids.size()];
-                    lootDescriptions2 = new String[ids.size()];
-                    lootTypes2 = new String[ids.size()];
-                    lootWeights2 = new String[ids.size()];
-                    lootQuantities2 = new String[ids.size()];
-
-                    for (int j = 0; j < lootImages.length; j++) {
-
-                        if(!lootImages[j].equals("empty")) {
-
-                            lootItems2[k] = lootItems[j];
-                            lootIds2[k] = lootIds[j];
-                            lootImages2[k] = lootImages[j];
-                            lootDescriptions2[k] = lootDescriptions[j];
-                            lootTypes2[k] = lootTypes[j];
-                            lootWeights2[k] = lootWeights[j];
-                            lootQuantities2[k] = lootQuantities[j];
-
-                            k += 1;
-
-                        }
-                    }
-
-                    //Fill dialog with items
-                    for (int i = 0; i < lootImages2.length; i++) {
-
-                        if (!lootTypes2[i].equals("creature_product") && !lootTypes2[i].equals("other")) {
-
-                            String image = lootImages2[i];
-                            imageID = getResources().getIdentifier(image, "mipmap", "com.example.rafal.gra");
-                            ((ImageAdapterLoot) grid.getAdapter()).changeImage(i, imageID);
-
-                        }  else {
-
-                            String image = lootImages2[i];
-                            String text = lootQuantities2[i];
-                            imageID = getResources().getIdentifier(image, "mipmap", "com.example.rafal.gra");
-                            ((ImageAdapterLoot) grid.getAdapter()).changeImage(i, imageID);
-
-                            if (!text.equals("1")) {
-                                ((ImageAdapterLoot) grid.getAdapter()).changeText(i, text + "  ");
-                            }
-
-                        }
-
-                    }
-
-                    dialog.show();
-
-                    //Set format for double numbers
-                    final NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
-                    nf.setMinimumFractionDigits(2);
-
-                    //Text to display after tapping item in depot
-                    grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                                if (lootImages2[position] != null) {
-
-                                    if (Integer.parseInt(lootQuantities2[position]) > 1 && !lootImages2[position].equals("Fish")
-                                            && (lootTypes2[position].equals("other") || lootTypes[position].equals("creature_product"))){
-
-                                        if (lootImages2[position] != null) {
-
-                                            Toast.makeText(getBaseContext(),
-                                                    "You see " + lootQuantities2[position] + " " + lootItems2[position].toLowerCase() +
-                                                            "s. They weigh " + nf.format(Double.parseDouble(lootWeights2[position]) * Double.parseDouble(lootQuantities2[position])) + " oz.",
-                                                    Toast.LENGTH_LONG).show();
-
-                                        }
-
-                                    } else if (lootImages2[position].equals("Fish") && Integer.parseInt(lootQuantities2[position]) > 1) {
-
-                                        if (lootImages2[position] != null) {
-
-                                            Toast.makeText(getBaseContext(),
-                                                    "You see " + lootQuantities2[position] + " fish. They weigh " +
-                                                            nf.format(Double.parseDouble(lootWeights2[position]) * Double.parseDouble(lootQuantities2[position])) + " oz.",
-                                                    Toast.LENGTH_LONG).show();
-
-                                        }
-
-                                    } else {
-
-                                        if (lootImages2[position] != null) {
-                                            Toast.makeText(getBaseContext(), lootDescriptions2[position], Toast.LENGTH_LONG).show();
-                                        }
-
-                                    }
-                                }
-
-                        }
-                    });
-
                     for (int i = 0; i < list.size(); i++) {
 
                         int id_item = Integer.parseInt(ids.get(i));
-                        quantityLoot = Integer.parseInt(lootQuantities2[i]);
                         checkIfItemExist(id_item);
+
 
                     }
                 }
@@ -1209,6 +1039,7 @@ public class WalkaActivity extends AppCompatActivity {
 
         saveGame();
         saveSkills();
+
 
     }
 
@@ -1458,9 +1289,10 @@ public class WalkaActivity extends AppCompatActivity {
 
                 showJSONcheck(json);
                 if(check_id_player.equals("notExist")){
-                    saveLoot(id_player, id_item, quantityLoot);
+                    int quantity = 1;
+                    saveLoot(id_player, id_item, quantity);
                 }else{
-                    int quantity = check_quantity + quantityLoot;
+                    int quantity = check_quantity + 1;
                     saveSameLoot(id_player, id_item, quantity);
                 }
 
@@ -1479,14 +1311,15 @@ public class WalkaActivity extends AppCompatActivity {
 
     private void showJSONcheck(String json) {
 
-        String  playerId = "", quantity2 = "";
+        String  playerId = "";
+        Integer quantity2 = 0;
 
         try {
             JSONObject jsonObject = new JSONObject(json);
             JSONArray result = jsonObject.getJSONArray(ConfigIfExist.JSON_ARRAY);//name of class
             JSONObject collegeData = result.getJSONObject(0);
             playerId = collegeData.getString(ConfigIfExist.KEY_ID_PLAYER);
-            quantity2 = collegeData.getString(ConfigIfExist.KEY_QUANTITY);
+            quantity2 = collegeData.getInt(ConfigIfExist.KEY_QUANTITY);
 
 
         } catch (JSONException e) {
@@ -1494,7 +1327,8 @@ public class WalkaActivity extends AppCompatActivity {
         }
 
         check_id_player = playerId;
-        check_quantity = Integer.parseInt(quantity2);
+        check_quantity =quantity2;
+
     }
 
 }
