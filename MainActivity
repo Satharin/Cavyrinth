@@ -6,15 +6,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +26,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import static java.sql.Types.NULL;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,21 +48,14 @@ public class MainActivity extends AppCompatActivity {
     //Character statistics and equipment
     int player_hp, player_mp, player_level, player_magic_level, player_experience, player_gold,
             player_capacity, player_attack, player_defence, player_critical, player_critical_chance,
-            player_skill_points, player_magic_experience, tempLoggedIn;
+            player_skill_points, player_magic_experience;
 
     int player_eq_helmet, player_eq_armor, player_eq_legs, player_eq_boots, player_eq_weapon,
             player_eq_shield, player_eq_ring_left, player_eq_ring_right, player_eq_amulet;
 
     //Loadings for getting data from database
     private ProgressDialog loadingGetPlayerID, loadingGetPlayerIdStats, loadingGetItemWeaponStats,
-            loadingGetItemShieldStats, loadingGetItemHelmetStats, loadingGetItemArmorStats,
-            loadingGetItemLegsStats, loadingGetItemBootsStats, loadingGetItemAmuletStats,
-            loadingGetItemRingLeftStats, loadingGetItemRingRightStats, loadingLogin;
-
-    boolean loggedIn = false;
-
-    private Button questsButton, huntButton, craftButton, eqButton, statisticsButton, skillsButton,
-                    shopButton, expTableButton, depotButton, pvpButton, logoutButton, exitButton;
+            loadingGetItemShieldStats;
 
 
     @Override
@@ -72,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if(haveNetworkConnection()) {
-
-            tempLoggedIn = 0;
 
             //Load viariables
             loadGame();
@@ -89,56 +80,8 @@ public class MainActivity extends AppCompatActivity {
             ring_left = new ItemArmors(0, "", 0, "", 0, "", 0, 0);
             ring_right = new ItemArmors(0, "", 0, "", 0, "", 0, 0);
 
-            questsButton = (Button) findViewById(R.id.quests);
-            huntButton = (Button) findViewById(R.id.craft);
-            craftButton = (Button) findViewById(R.id.jewellery);
-            eqButton = (Button) findViewById(R.id.eq);
-            statisticsButton = (Button) findViewById(R.id.statistics);
-            skillsButton = (Button) findViewById(R.id.skills);
-            shopButton = (Button) findViewById(R.id.shop);
-            expTableButton = (Button) findViewById(R.id.expTable);
-            depotButton = (Button) findViewById(R.id.depot);
-            pvpButton = (Button) findViewById(R.id.pvp);
-            logoutButton = (Button) findViewById(R.id.logout);
-            exitButton = (Button) findViewById(R.id.exit);
-
-            Typeface type = Typeface.createFromAsset(getAssets(),"fonts/MoriaCitadel.TTF");
-            questsButton.setTypeface(type);
-            huntButton.setTypeface(type);
-            craftButton.setTypeface(type);
-            eqButton.setTypeface(type);
-            statisticsButton.setTypeface(type);
-            skillsButton.setTypeface(type);
-            shopButton.setTypeface(type);
-            expTableButton.setTypeface(type);
-            depotButton.setTypeface(type);
-            pvpButton.setTypeface(type);
-            logoutButton.setTypeface(type);
-            exitButton.setTypeface(type);
-
-            loadingLogin = ProgressDialog.show(MainActivity.this, "Please wait...", "Loading.6..", false, false);
-
             //get id_player based on player_name
             getPlayerId();
-
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getPlayerIdStats();
-
-                }
-            }, 1000);
-
-            final Handler handler2 = new Handler();
-            handler2.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-                        loadingLogin.dismiss();
-
-                }
-            }, 4000);
 
             //Save variables
             saveGame();
@@ -152,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         }else {
             Toast.makeText(MainActivity.this,"No network connection.", Toast.LENGTH_LONG).show();
         }
-        
+
     }
 
     //Check if player really wants to leave the game
@@ -178,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                     .create();
             exit.show();
 
-        }else{
+        }else {
 
             AlertDialog.Builder exit = new AlertDialog.Builder(this);
 
@@ -229,29 +172,8 @@ public class MainActivity extends AppCompatActivity {
     //Display character's statistics
     public void statistics(View view) {
 
-        //Clear textView from MainActivity
-        final TextView mainActivity = (TextView) findViewById(R.id.mainTextView);
-        mainActivity.setMovementMethod(new ScrollingMovementMethod());
-        mainActivity.clearComposingText();
-        mainActivity.scrollTo(0, 0);
-
         if(haveNetworkConnection()) {
-
-            StringBuilder statistics = new StringBuilder("");
-            statistics.append("Name: " + player_name + "\n");
-            statistics.append("Health points: " + Integer.toString(player_hp) + "\n");
-            statistics.append("Mana points: " + Integer.toString(player_mp) + "\n");
-            statistics.append("Level: " + Integer.toString(player_level) + "\n");
-            statistics.append("Magic level: " + Integer.toString(player_magic_level) + "\n");
-            statistics.append("Attack: " + Integer.toString(player_attack) + "+" + Integer.toString(weapon.attack) + "\n");
-            statistics.append("Defence: " + Integer.toString(player_defence) + "+" + Integer.toString(shield.defence) + "\n");
-            statistics.append("Armor: " + Integer.toString(helmet.armor+armor.armor+legs.armor+boots.armor+amulet.armor+
-                    ring_left.armor+ring_right.armor) + "\n");
-            statistics.append("Experience: " + Integer.toString(player_experience) + "\n");
-            statistics.append("Gold: " + Integer.toString(player_gold));
-            mainActivity.setText(statistics);
-
-            //getPlayerIdStats();
+            getPlayerIdStats();
         }else {
             Toast.makeText(MainActivity.this,"No network connection.", Toast.LENGTH_LONG).show();
         }
@@ -580,22 +502,15 @@ public class MainActivity extends AppCompatActivity {
 
                 loadingGetPlayerIdStats.dismiss();
                 showJSONgetPlayerStats(response);
-                loggedIn = true;
 
                 //Clear textView from MainActivity
-                /*final TextView mainActivity = (TextView) findViewById(R.id.mainTextView);
+                TextView mainActivity = (TextView) findViewById(R.id.mainTextView);
                 mainActivity.setMovementMethod(new ScrollingMovementMethod());
                 mainActivity.clearComposingText();
                 mainActivity.scrollTo(0, 0);
 
 
                 //Display character's statistics
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-
                 StringBuilder statistics = new StringBuilder("");
                 statistics.append("Name: " + player_name + "\n");
                 statistics.append("Health points: " + Integer.toString(player_hp) + "\n");
@@ -609,8 +524,6 @@ public class MainActivity extends AppCompatActivity {
                 statistics.append("Experience: " + Integer.toString(player_experience) + "\n");
                 statistics.append("Gold: " + Integer.toString(player_gold));
                 mainActivity.setText(statistics);
-                    }
-                }, 500);*/
 
             }
         },
@@ -665,6 +578,7 @@ public class MainActivity extends AppCompatActivity {
             playerEqRingLeft = collegeData.getString(ConfigPlayerID.KEY_EQ_RING_LEFT);
             playerEqRingRight = collegeData.getString(ConfigPlayerID.KEY_EQ_RING_RIGHT);
 
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -708,100 +622,28 @@ public class MainActivity extends AppCompatActivity {
         ring_right.id = player_eq_ring_right;
 
         //Fill item objects
-        final Handler handler = new Handler();
-        final Handler handler2 = new Handler();
-        final Handler handler3 = new Handler();
-        final Handler handler4 = new Handler();
-        final Handler handler5 = new Handler();
-        final Handler handler6 = new Handler();
-        final Handler handler7 = new Handler();
-        final Handler handler8 = new Handler();
-        final Handler handler9 = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getItemWeaponStats(weapon.id);
-            }
-        }, 500);
-
-        handler2.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getItemShieldStats(shield.id);
-            }
-        }, 500);
-
-        handler3.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getItemHelmetStats(helmet.id);
-            }
-        }, 500);
-
-        handler4.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getItemArmorStats(armor.id);
-            }
-        }, 500);
-
-        handler5.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getItemLegsStats(legs.id);
-            }
-        }, 500);
-
-        handler6.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getItemBootsStats(boots.id);
-            }
-        }, 500);
-
-        handler7.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getItemAmuletStats(amulet.id);
-            }
-        }, 500);
-
-        handler8.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getItemRingLeftStats(ring_left.id);
-            }
-        }, 500);
-
-        handler9.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getItemRingRightStats(ring_right.id);
-            }
-        }, 500);
-
-        /*getItemWeaponStats(weapon.id);
+        getItemWeaponStats(weapon.id);
         getItemShieldStats(shield.id);
-        getItemHelmetStats(helmet.id);
+        getItemArmorStats(helmet.id);
         getItemArmorStats(armor.id);
-        getItemLegsStats(legs.id);
-        getItemBootsStats(boots.id);
-        getItemAmuletStats(amulet.id);
-        getItemRingLeftStats(ring_left.id);
-        getItemRingRightStats(ring_right.id);*/
+        getItemArmorStats(legs.id);
+        getItemArmorStats(boots.id);
+        getItemArmorStats(amulet.id);
+        getItemArmorStats(ring_left.id);
+        getItemArmorStats(ring_right.id);
 
     }
 
     public void getItemWeaponStats(int get_id){
 
-        //loadingGetItemWeaponStats = ProgressDialog.show(this, "Please wait...", "Loading...", false, false);
+        loadingGetItemWeaponStats = ProgressDialog.show(this, "Please wait...", "Loading...", false, false);
 
         String url = ConfigGetItemWeaponStats.DATA_URL_GET_WEAPON+get_id; //URL taken from Config.java and added number after it
 
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                //loadingGetItemWeaponStats.dismiss();
+                loadingGetItemWeaponStats.dismiss();
                 showJSONGetItemWeaponStats(response);
 
             }
@@ -847,21 +689,20 @@ public class MainActivity extends AppCompatActivity {
         weapon.defence = Integer.parseInt(weaponDefence);
         weapon.elemental_attack = weaponElementalAttack;
         weapon.bonus = Integer.parseInt(weaponBonus);
-        weapon.weight = Double.parseDouble(weaponWeight);
-        }
+        weapon.weight = Double.parseDouble(weaponWeight);}
 
     }
 
     public void getItemShieldStats(int get_id){
 
-        //loadingGetItemShieldStats = ProgressDialog.show(this, "Please wait...", "Loading...", false, false);
+        loadingGetItemShieldStats = ProgressDialog.show(this, "Please wait...", "Loading...", false, false);
 
         String url = ConfigGetItemShieldStats.DATA_URL_GET_SHIELD+get_id; //URL taken from Config.java and added number after it
 
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                //loadingGetItemShieldStats.dismiss();
+                loadingGetItemShieldStats.dismiss();
                 showJSONGetItemShieldStats(response);
 
             }
@@ -905,171 +746,19 @@ public class MainActivity extends AppCompatActivity {
         shield.defence = Integer.parseInt(shieldDefence);
         shield.immunity = shieldImmunity;
         shield.bonus = Integer.parseInt(shieldBonus);
-        shield.weight = Double.parseDouble(shieldWeight);
-        }
-
-    }
-
-    public void getItemHelmetStats(final int get_id){
-
-        //loadingGetItemHelmetStats = ProgressDialog.show(this, "Please wait...", "Loading...", false, false);
-        String url = ConfigGetItemArmorStats.DATA_URL_GET_ARMOR+get_id;
-
-        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //loadingGetItemHelmetStats.dismiss();
-                showJSONGetItemArmorStats(response, get_id);
-
-            }
-        },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MainActivity.this, error.getMessage().toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
+        shield.weight = Double.parseDouble(shieldWeight);}
 
     }
 
     public void getItemArmorStats(final int get_id){
 
-        //loadingGetItemArmorStats = ProgressDialog.show(this, "Please wait...", "Loading...", false, false);
-        String url = ConfigGetItemArmorStats.DATA_URL_GET_ARMOR+get_id;
-
-        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //loadingGetItemArmorStats.dismiss();
-                showJSONGetItemArmorStats(response, get_id);
-
-            }
-        },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MainActivity.this, error.getMessage().toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-
-    }
-
-    public void getItemLegsStats(final int get_id){
-
-        //loadingGetItemLegsStats = ProgressDialog.show(this, "Please wait...", "Loading...", false, false);
         String url = ConfigGetItemArmorStats.DATA_URL_GET_ARMOR+get_id; //URL taken from Config.java and added number after it
 
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                //loadingGetItemLegsStats.dismiss();
-                showJSONGetItemArmorStats(response, get_id);
 
-            }
-        },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MainActivity.this, error.getMessage().toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-
-    }
-
-    public void getItemBootsStats(final int get_id){
-
-        //loadingGetItemBootsStats = ProgressDialog.show(this, "Please wait...", "Loading...", false, false);
-        String url = ConfigGetItemArmorStats.DATA_URL_GET_ARMOR+get_id; //URL taken from Config.java and added number after it
-
-        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //loadingGetItemBootsStats.dismiss();
-                showJSONGetItemArmorStats(response, get_id);
-
-            }
-        },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MainActivity.this, error.getMessage().toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-
-    }
-
-    public void getItemAmuletStats(final int get_id){
-
-        //loadingGetItemAmuletStats = ProgressDialog.show(this, "Please wait...", "Loading...", false, false);
-        String url = ConfigGetItemArmorStats.DATA_URL_GET_ARMOR+get_id; //URL taken from Config.java and added number after it
-
-        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //loadingGetItemAmuletStats.dismiss();
-                showJSONGetItemArmorStats(response, get_id);
-
-            }
-        },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MainActivity.this, error.getMessage().toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-
-    }
-
-    public void getItemRingLeftStats(final int get_id){
-
-        //loadingGetItemRingLeftStats = ProgressDialog.show(this, "Please wait...", "Loading...", false, false);
-        String url = ConfigGetItemArmorStats.DATA_URL_GET_ARMOR+get_id; //URL taken from Config.java and added number after it
-
-        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //loadingGetItemRingLeftStats.dismiss();
-                showJSONGetItemArmorStats(response, get_id);
-
-            }
-        },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MainActivity.this, error.getMessage().toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-
-    }
-
-    public void getItemRingRightStats(final int get_id){
-
-        //loadingGetItemRingRightStats = ProgressDialog.show(this, "Please wait...", "Loading...", false, false);
-        String url = ConfigGetItemArmorStats.DATA_URL_GET_ARMOR+get_id; //URL taken from Config.java and added number after it
-
-        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //loadingGetItemRingRightStats.dismiss();
-                showJSONGetItemArmorStats(response, get_id);
+                    showJSONGetItemArmorStats(response, get_id);
 
             }
         },
@@ -1091,22 +780,23 @@ public class MainActivity extends AppCompatActivity {
                 armorValue = "", armorImmunity = "", armorBonus = "", armorWeight = "";
 
         //Get data from database
-            try {
-                JSONObject jsonObject = new JSONObject(json);
-                JSONArray result = jsonObject.getJSONArray(ConfigGetItemArmorStats.JSON_ARRAY);
-                JSONObject collegeData = result.getJSONObject(0);
-                armorName = collegeData.getString(ConfigGetItemArmorStats.KEY_NAME);
-                armorArmor = collegeData.getString(ConfigGetItemArmorStats.KEY_ARMOR);
-                armorAttribute = collegeData.getString(ConfigGetItemArmorStats.KEY_ATTRIBUTE);
-                armorValue = collegeData.getString(ConfigGetItemArmorStats.KEY_VALUE);
-                armorImmunity = collegeData.getString(ConfigGetItemArmorStats.KEY_IMMUNITY);
-                armorBonus = collegeData.getString(ConfigGetItemArmorStats.KEY_BONUS);
-                armorWeight = collegeData.getString(ConfigGetItemArmorStats.KEY_WEIGHT);
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray result = jsonObject.getJSONArray(ConfigGetItemArmorStats.JSON_ARRAY);//name of class
+            JSONObject collegeData = result.getJSONObject(0);
+            armorName = collegeData.getString(ConfigGetItemArmorStats.KEY_NAME);
+            armorArmor = collegeData.getString(ConfigGetItemArmorStats.KEY_ARMOR);
+            armorAttribute = collegeData.getString(ConfigGetItemArmorStats.KEY_ATTRIBUTE);
+            armorValue = collegeData.getString(ConfigGetItemArmorStats.KEY_VALUE);
+            armorImmunity = collegeData.getString(ConfigGetItemArmorStats.KEY_IMMUNITY);
+            armorBonus = collegeData.getString(ConfigGetItemArmorStats.KEY_BONUS);
+            armorWeight = collegeData.getString(ConfigGetItemArmorStats.KEY_WEIGHT);
 
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
 
         //Fill statistics for character's armor type items
@@ -1120,7 +810,6 @@ public class MainActivity extends AppCompatActivity {
                 helmet.immunity = armorImmunity;
                 helmet.bonus = Integer.parseInt(armorBonus);
                 helmet.weight = Double.parseDouble(armorWeight);
-                tempLoggedIn += 1;
             }
         }
 
@@ -1134,7 +823,6 @@ public class MainActivity extends AppCompatActivity {
                 armor.immunity = armorImmunity;
                 armor.bonus = Integer.parseInt(armorBonus);
                 armor.weight = Double.parseDouble(armorWeight);
-                tempLoggedIn += 1;
             }
         }
 
@@ -1148,7 +836,6 @@ public class MainActivity extends AppCompatActivity {
                 legs.immunity = armorImmunity;
                 legs.bonus = Integer.parseInt(armorBonus);
                 legs.weight = Double.parseDouble(armorWeight);
-                tempLoggedIn += 1;
             }
         }
 
@@ -1162,7 +849,6 @@ public class MainActivity extends AppCompatActivity {
                 boots.immunity = armorImmunity;
                 boots.bonus = Integer.parseInt(armorBonus);
                 boots.weight = Double.parseDouble(armorWeight);
-                tempLoggedIn += 1;
             }
         }
 
@@ -1176,7 +862,6 @@ public class MainActivity extends AppCompatActivity {
                 amulet.immunity = armorImmunity;
                 amulet.bonus = Integer.parseInt(armorBonus);
                 amulet.weight = Double.parseDouble(armorWeight);
-                tempLoggedIn += 1;
             }
         }
 
@@ -1190,7 +875,6 @@ public class MainActivity extends AppCompatActivity {
                 ring_left.immunity = armorImmunity;
                 ring_left.bonus = Integer.parseInt(armorBonus);
                 ring_left.weight = Double.parseDouble(armorWeight);
-                tempLoggedIn += 1;
             }
         }
 
@@ -1204,9 +888,9 @@ public class MainActivity extends AppCompatActivity {
                 ring_right.immunity = armorImmunity;
                 ring_right.bonus = Integer.parseInt(armorBonus);
                 ring_right.weight = Double.parseDouble(armorWeight);
-                tempLoggedIn += 1;
             }
         }
+
 
     }
 
@@ -1226,6 +910,7 @@ public class MainActivity extends AppCompatActivity {
                     haveConnectedMobile = true;
         }
         return haveConnectedWifi || haveConnectedMobile;
+
     }
 
 }
