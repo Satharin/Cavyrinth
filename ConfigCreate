@@ -6,6 +6,10 @@ public class ConfigCreate {
     public static final String KEY_NAME = "name";
     public static final String KEY_EMAIL = "email";
     public static final String JSON_ARRAY = "result";
+<<<<<<< HEAD
     //stacjonarka
+=======
+    //tablet
+>>>>>>> bbcb477444c334bd05ab96a29b10f5f1509a93d4
 
 }
