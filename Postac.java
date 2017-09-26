@@ -34,6 +34,7 @@ public class Postac {
         this.critChance = critChance;
         this.hpotion = hpotion;
         this.mpotion = mpotion;
+
     }
 
 }

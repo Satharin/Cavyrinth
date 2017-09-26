@@ -86,4 +86,5 @@ public class ItemArmors {
     public double getWeight() {
         return weight;
     }
+
 }

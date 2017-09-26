@@ -1,19 +1,20 @@
 package com.example.rafal.gra;
 
-public class ItemShield {
+public class ItemWeapon {
 
-    int id, defence, bonus;
-    String name, immunity;
+    int id, attack, defence, bonus;
+    String name, elemental_attack;
     double weight;
 
-    public ItemShield() {}
+    public ItemWeapon() {}
 
-    public ItemShield(int id, String name, int defence, String immunity, int bonus, double weight) {
+    public ItemWeapon(int id, String name, int attack, int defence, String elemental_attack, int bonus, double weight) {
 
         this.id = id;
         this.name = name;
+        this.attack = attack;
         this.defence = defence;
-        this.immunity = immunity;
+        this.elemental_attack = elemental_attack;
         this.bonus = bonus;
         this.weight = weight;
 
@@ -31,15 +32,21 @@ public class ItemShield {
 
     }
 
+    public void setAttack(int attack) {
+
+        this.attack = attack;
+
+    }
+
     public void setDefence(int defence) {
 
         this.defence = defence;
 
     }
 
-    public void setImmunity(String immunity) {
+    public void setElemental(String elemental_attack) {
 
-        this.immunity = immunity;
+        this.elemental_attack = elemental_attack;
 
     }
 
@@ -59,13 +66,16 @@ public class ItemShield {
 
     public String getName() {return name;}
 
+    public int getAttack() {return attack;}
+
     public int getDefence() {return defence;}
 
-    public String getImmunity() {return immunity;}
+    public String getElemental() {return elemental_attack;}
 
     public int getBonus() {return bonus;}
 
     public double getWeight() {
         return weight;
     }
+
 }

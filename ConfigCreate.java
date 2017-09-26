@@ -7,7 +7,4 @@ public class ConfigCreate {
     public static final String KEY_EMAIL = "email";
     public static final String JSON_ARRAY = "result";
 
-//ok nie tak
-
-
 }

@@ -33,11 +33,11 @@ public class ConfigDepot {
 
     protected void ConfigDepot(){
 
-        JSONObject jsonObject=null;
+        JSONObject jsonObject = null;
 
         try {
             jsonObject = new JSONObject(json);
-            if(JSON_ARRAY != null) {
+            if(!JSON_ARRAY.equals("null")) {
             depot = jsonObject.getJSONArray(JSON_ARRAY);
 
                 images = new String[depot.length()];
@@ -65,12 +65,13 @@ public class ConfigDepot {
                         subtypes[i] = jo.getString(KEY_SUBTYPE);
                     }
             }else{
-                Arrays.fill(images, null);
-            }
+                    if(images != null){
+                        Arrays.fill(images, null);}}
+
 
             }catch(JSONException e){
                 e.printStackTrace();
-            }
+        }
     }
 
 }

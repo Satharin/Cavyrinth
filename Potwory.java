@@ -1,11 +1,11 @@
 package com.example.rafal.gra;
 
-public class Monsters {
+public class Potwory {
 
     String name;
     Integer hp, atk, def, exp, goldMax;
 
-    public Monsters(String name, Integer hp, Integer atk, Integer def, Integer exp, Integer goldMax) {
+    public Potwory(String name, Integer hp, Integer atk, Integer def, Integer exp, Integer goldMax) {
 
         this.name = name;
         this.hp = hp;
@@ -13,6 +13,7 @@ public class Monsters {
         this.def = def;
         this.exp = exp;
         this.goldMax = goldMax;
+
     }
 
 }
