@@ -1,0 +1,31 @@
+package com.example.rafal.gra;
+
+public class Postac {
+
+    String name, sword, shield;
+    Integer hp, mana, lvl, mlvl, exp, mExp, atk, def, money, sp, crit, critChance, hpotion, mpotion;
+
+    public Postac(String name, Integer hp, Integer mana, Integer lvl, Integer mlvl, Integer exp, Integer mExp, Integer atk,
+                  Integer def, String sword, String shield, Integer money, Integer sp, Integer crit, Integer critChance,
+                  Integer hpotion, Integer mpotion) {
+
+        this.name = name;
+        this.hp = hp;
+        this.mana = mana;
+        this.lvl = lvl;
+        this.mlvl = mlvl;
+        this.exp = exp;
+        this.mExp = mExp;
+        this.atk = atk;
+        this.def = def;
+        this.sword = sword;
+        this.shield = shield;
+        this.money = money;
+        this.sp = sp;
+        this.crit = crit;
+        this.critChance = critChance;
+        this.hpotion = hpotion;
+        this.mpotion = mpotion;
+    }
+
+}

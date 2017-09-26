@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.rafal.gra.DepotActivity"
+    android:background="#575757">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Jewellery"
+        android:id="@+id/hunt"
+        android:onClick="showJewellery"
+        android:layout_above="@+id/exit"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:id="@+id/exit"
+        android:onClick="back"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/hunt"
+        android:layout_alignEnd="@+id/hunt" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Weapon"
+        android:id="@+id/weapon"
+        android:onClick="showWeapon"
+        android:layout_above="@+id/hunt"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/hunt"
+        android:layout_alignEnd="@+id/hunt" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Shield"
+        android:id="@+id/shield"
+        android:onClick="showShield"
+        android:layout_above="@+id/hunt"
+        android:layout_alignLeft="@+id/craft"
+        android:layout_alignStart="@+id/craft"
+        android:layout_alignRight="@+id/craft"
+        android:layout_alignEnd="@+id/craft" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Craft"
+        android:id="@+id/craft"
+        android:onClick="showCraft"
+        android:layout_alignBottom="@+id/hunt"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Armor"
+        android:id="@+id/armor"
+        android:onClick="showArmor"
+        android:layout_alignTop="@+id/shield"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Other"
+        android:id="@+id/other"
+        android:onClick="showOther"
+        android:layout_above="@+id/exit"
+        android:layout_alignLeft="@+id/armor"
+        android:layout_alignStart="@+id/armor" />
+
+    <GridView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/depo"
+        android:numColumns="4"
+        android:adjustViewBounds="true"
+        android:verticalSpacing="-10dp"
+        android:horizontalSpacing="1dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerInParent = "true"
+        android:layout_above="@+id/weapon" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="All"
+        android:id="@+id/all"
+        android:onClick="showAll"
+        android:layout_alignBottom="@+id/exit"
+        android:layout_alignRight="@+id/other"
+        android:layout_alignEnd="@+id/other"
+        android:layout_alignLeft="@+id/other"
+        android:layout_alignStart="@+id/other" />
+
+
+
+
+</RelativeLayout>

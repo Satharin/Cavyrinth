@@ -1,0 +1,10 @@
+db.addItem(new Item(1, "Wooden Shield", 0, 25, "shield", 100, "low", 4));
+        db.addItem(new Item(2, "Steel Shield", 0, 30, "shield", 300, "low", 4));
+        db.addItem(new Item(3, "Short Sword", 10, 8, "weapon", 150, "low", 4));
+        db.addItem(new Item(4, "Wooden Club", 10, 7,"weapon", 190, "low", 4));
+        db.addItem(new Item(5, "Steel Axe", 12, 10, "weapon", 250, "mid", 4));
+        db.addItem(new Item(6, "Bone Club", 14, 9, "weapon" , 350, "mid", 4));
+        db.addItem(new Item(7, "Katana", 15, 11, "weapon", 400, "mid", 4));
+        db.addItem(new Item(8, "Double Axe", 19, 15, "weapon", 650, "high", 4));
+        db.addItem(new Item(9, "Fire Sword", 25, 12, "weapon", 850, "high", 1));
+        db.addItem(new Item(10, "Tear Axe", 25, 18, "weapon", 1000, "high", 2));

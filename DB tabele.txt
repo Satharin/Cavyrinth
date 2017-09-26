@@ -1,0 +1,54 @@
+﻿INSERT INTO Items (name, type, price, rarity, weight, image)
+VALUES ('Wooden Shield', 'shield', '20', '0', '35', 'wooden_shield_img');
+
+INSERT INTO Players (id_player, name, hp, mp, level, magic_level, experience, gold, capacity, acc_number, password, attack, defence, critical, critical_chance, eq_helmet, eq_armor, eq_legs, eq_boots, eq_weapon, eq_shield, eq_ring_left, eq_ring_right, eq_amulet)
+VALUES ('5000','Satharin','200','150','1','0','0','0','450','8654436','sarpwxm2','5','5','5','10','','','','','1005','1000','','','');
+
+Wyświetlenie tabeli Items shield
+SELECT Items.name, type, Item_stat.value AS defence, price, weight, IFNULL(Stats.name, 'none') AS immunity, IFNULL(Item_immunities.bonus, '0') AS 'bonus%',Rarities.name AS rarity FROM Items 
+LEFT JOIN Rarities ON Items.rarity = Rarities.id_rarity
+LEFT JOIN Item_stat ON Items.id_item = Item_stat.id_item
+LEFT JOIN Item_immunities ON Items.id_item = Item_immunities.id_item
+LEFT JOIN Stats ON Stats.id_stat = Item_immunities.id_stat
+WHERE type = 'shield';
+
+Wyświetlenie tabeli Rarities
+SELECT name FROM Rarities;
+
+Wyświetlenie tabeli Stats
+SELECT name FROM Stats;
+
+Wyświetlanie tabeli Items weapon
+SELECT Items.name as name, type, Subtypes.name AS subtype, CASE WHEN Item_stat.id_stat = 4000 THEN Item_stat.value END
+AS attack, MAX(CASE WHEN Item_stat.id_stat = 4001 THEN Item_stat.value END) AS defence, price, weight, IFNULL(Stats.name, 'none') AS elemental_attack, IFNULL(Item_immunities.bonus, '0') AS 'bonus%',Rarities.name AS rarity FROM Items 
+LEFT JOIN Rarities ON Items.rarity = Rarities.id_rarity
+LEFT JOIN Item_stat ON Items.id_item = Item_stat.id_item
+LEFT JOIN Item_immunities ON Items.id_item = Item_immunities.id_item
+LEFT JOIN Stats ON Stats.id_stat = Item_immunities.id_stat
+LEFT JOIN Subtypes ON Subtypes.id_item = Items.id_item
+WHERE type = 'weapon' 
+GROUP BY name
+
+Wyświetlanie tabeli Monsters
+SELECT Monsters.name, hp, CASE WHEN Monster_immunities.id_stat = 4000 THEN Monster_immunities.bonus END AS attack, MAX(CASE WHEN Monster_immunities.id_stat = 4001 THEN Monster_immunities.bonus END) AS  defence, experience, gold_max, image FROM Monsters
+LEFT JOIN Monster_immunities ON Monsters.id_monster = Monster_immunities.id_monster
+LEFT JOIN Stats ON Stats.id_stat = Monster_immunities.id_stat
+GROUP BY name
+
+Wyświetlanie loota dla danego potwora
+SELECT Items.name, Rarities.name as rarity, Rarity_chances.value as rarity_chances FROM Items
+LEFT JOIN Loot ON Items.id_item = Loot.id_item
+LEFT JOIN Monsters ON Monsters.id_monster = Loot.id_monster
+LEFT JOIN Rarity_chances ON Monsters.id_monster = Rarity_chances.id_monster
+LEFT JOIN Rarities ON Rarities.id_rarity = Rarity_chances.id_rarity
+WHERE Monsters.id_monster = "2003" AND Items.rarity = Rarities.id_rarity
+
+Wyświetlanie tabeli Items others
+SELECT Items.name, type, price, weight, Rarities.name AS rarity FROM Items 
+LEFT JOIN Rarities ON Items.rarity = Rarities.id_rarity
+LEFT JOIN Item_stat ON Items.id_item = Item_stat.id_item
+WHERE type = 'creature_product';
+
+
+
+

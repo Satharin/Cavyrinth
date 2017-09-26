@@ -1,0 +1,867 @@
+package com.example.rafal.gra;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.text.Layout;
+import android.text.method.ScrollingMovementMethod;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.os.Handler;
+import android.widget.ProgressBar;
+import java.util.ArrayList;
+
+public class WalkaActivity extends AppCompatActivity {
+
+    //Potwory
+    Potwory goblinWojownik, goblinMag, ogniowySmok, wodnySmok, potwor;
+
+    //Przedmioty
+    Przedmioty miecz_0, miecz_1, miecz_2, tarcza_0, tarcza_1, tarcza_2;
+
+    int postacHp, postacMana, postacLvl, postacMlvl, postacExp, postacmExp, postacAtk, postacDef, postacMon,
+            postacSp, postacCrit, postacCritChance, healthPotion, manaPotion;
+
+    String postacSword, postacShield, miecz_1Chance, miecz_1Name;
+
+    //Pobranie danych z PolujActivity
+    Integer expPlace = PolujActivity.dataPacketHunt.getInt("expPlace");
+
+    StringBuilder oknoWalki = new StringBuilder("");
+
+    int currentExp = postacExp, currentMagicExp = postacmExp, currentMoney = postacMon, afterRun = 0, numerRundy = 1,
+            playerHp, monsterHp, playerMana, checkLvlAdvance, checkMlvlAdvance, runda = 0, firstAttackSpell = 0;
+    double loot, youHit, mobHit;
+    boolean slaying;
+
+    ArrayList<Integer> tabelaExpa = new ArrayList<Integer>();
+    ArrayList<Integer> tabelamExpa = new ArrayList<Integer>();
+
+    public ProgressBar progressBarHp, progressBarMana, progressBarPotwor;
+    //private Handler handler = new Handler();
+
+    //Miejsce zapisu zmiennych
+    public static Bundle dataPacketFight = new Bundle();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        //Wczytanie gry
+        odczyt();
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_walka);
+
+        //Deklaracja przycisków
+        Button walcz = (Button) findViewById(R.id.walcz);
+        Button czar = (Button) findViewById(R.id.spell);
+        Button heal = (Button) findViewById(R.id.heal);
+        Button potions = (Button) findViewById(R.id.potions);
+
+        //Akcja po wciśnięciu przycisku Potions
+        potions.setOnClickListener(new View.OnClickListener() {
+
+            //Stworzenie pop-up'u z przyciskami
+            public void onClick(View v) {
+                final Dialog dialog = new Dialog(WalkaActivity.this);
+                dialog.setTitle("Potions");
+                dialog.setContentView(R.layout.popup_potions);
+                dialog.show();
+
+                Button hp = (Button) dialog.findViewById(R.id.hpotion);
+                Button mp = (Button) dialog.findViewById(R.id.mpotion);
+                hp.setText("HP: " + Integer.toString(healthPotion));
+                mp.setText("MP: " + Integer.toString(manaPotion));
+
+                //Sprawdzenie ilości potków i życia/many i wyszarzenie przycisków
+                if (healthPotion == 0) {
+                    hp.setEnabled(false);
+                    hp.setClickable(false);
+                }
+
+                if (manaPotion == 0) {
+                    mp.setEnabled(false);
+                    mp.setClickable(false);
+                }
+
+                if (playerHp + 25 >= postacHp) {
+                    playerHp = postacHp;
+                    hp.setEnabled(false);
+                    hp.setClickable(false);
+                }
+
+                if (playerMana + 25 >= postacMana) {
+                    playerMana = postacMana;
+                    mp.setEnabled(false);
+                    mp.setClickable(false);
+                }
+
+                //Akcja po wciśnięciu przycisku HP
+                hp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (playerHp + 25 >= postacHp) {
+                            playerHp = postacHp;
+                            Button hpot = (Button) dialog.findViewById(R.id.hpotion);
+                            hpot.setEnabled(false);
+                            hpot.setClickable(false);
+                        }else {
+                            playerHp += 25;
+                        }
+                        healthPotion -= 1;
+                        Button hpot = (Button) dialog.findViewById(R.id.hpotion);
+                        hpot.setText("HP: " + Integer.toString(healthPotion));
+                        progressBarHp.setProgress(playerHp);
+                        TextView hp = (TextView) findViewById(R.id.textViewHp);
+                        hp.setText(playerHp + "/" + postacHp);
+                        if (healthPotion == 0) {
+                            hpot.setEnabled(false);
+                            hpot.setClickable(false);
+                        }
+                        zapis();
+                    }
+                });
+
+                //Akcja po wciśnięciu przycisku MP
+                mp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (playerMana + 25 >= postacMana) {
+                            playerMana = postacMana;
+                            Button mp = (Button) dialog.findViewById(R.id.mpotion);
+                            mp.setEnabled(false);
+                            mp.setClickable(false);
+                        }else {
+                            playerMana += 25;
+                        }
+                        manaPotion -= 1;
+                        Button mp = (Button) dialog.findViewById(R.id.mpotion);
+                        mp.setText("MP: " + Integer.toString(manaPotion));
+                        progressBarMana.setProgress(playerMana);
+                        TextView mana = (TextView) findViewById(R.id.textViewMana);
+                        mana.setText(playerMana + "/" + postacMana);
+                        if (manaPotion == 0) {
+                            mp.setEnabled(false);
+                            mp.setClickable(false);
+                        }
+                        zapis();
+                    }
+                });
+            }
+        });
+
+        //Konfiguracja pasków życia i many
+        resetBars();
+
+        progressBarPotwor.setProgress(100);
+        progressBarPotwor.setMax(100);
+        progressBarPotwor.setProgress(100);
+
+        //Wyszarzenie przycisków przy nieaktywnej walce
+        walcz.setClickable(false);
+        walcz.setEnabled(false);
+        czar.setEnabled(false);
+        czar.setClickable(false);
+        heal.setEnabled(false);
+        heal.setClickable(false);
+        potions.setEnabled(false);
+        potions.setClickable(false);
+
+        //Potwory
+        goblinWojownik = new Potwory("Goblin Warrior", 150, 20, 10, 25);
+        goblinMag = new Potwory("Goblin Mage", 125, 25, 5, 35);
+        ogniowySmok = new Potwory("Fire Dragon", 250, 35, 30, 45);
+        wodnySmok = new Potwory("Water Dragon", 250, 35, 30, 45);
+        potwor = new Potwory("", 0, 0, 0, 0);
+
+        //Przedmioty
+        miecz_0 = new Przedmioty("Sword+0", 20, 10, 20);
+        miecz_1 = new Przedmioty("Sword+1", 23, 11, 15);
+        miecz_2 = new Przedmioty("Sword+2", 26, 12, 10);
+        tarcza_0 = new Przedmioty("Shield+0", 0, 20, 20);
+        tarcza_1 = new Przedmioty("Shield+1", 0, 25, 15);
+        tarcza_2 = new Przedmioty("Shield+2", 0, 30, 10);
+
+        //Zapełnienie tabeli expa
+        fillExp();
+
+        //Zapełnienie tabeli magic expa
+        fillmExp();
+
+        //Pobranie poziomu postaci do zmiennych sprawdzających awanse
+        checkLvlAdvance = postacLvl;
+        checkMlvlAdvance = postacMlvl;
+
+    }
+
+    //Zapełnienie tabeli expa
+    public void fillExp() {
+
+        for (int i = 0; i < 101; i++) {
+            if (i == 0 || i == 1) {
+                tabelaExpa.add(i - 1);
+            } else {
+                tabelaExpa.add((i * ((tabelaExpa.get(i - 1) * (15 / 100)) + i * 15)));
+            }
+        }
+
+    }
+
+    //Wypełnienie tabeli mexpa
+    public void fillmExp() {
+
+        for (int i = 0; i < 101; i++) {
+            if (i == 0 || i == 1) {
+                tabelamExpa.add(i - 1);
+            } else {
+                tabelamExpa.add((i * ((tabelamExpa.get(i - 1) * (15 / 100)) + i * 20)));
+            }
+        }
+
+    }
+
+    //Wylosowanie potwora
+    public void monster(View view) {
+
+        if (expPlace == 0) {
+            if (Math.floor(Math.random() * 10) > 5) {
+                potwor = goblinWojownik;
+            } else {
+                potwor = goblinMag;
+            }
+        } else {
+            if (Math.floor(Math.random() * 10) > 5) {
+                potwor = ogniowySmok;
+            } else {
+                potwor = wodnySmok;
+            }
+        }
+
+        //Zapisanie obecnego hp i many do obliczeń w czasie walki
+        playerHp = postacHp;
+        monsterHp = potwor.hp;
+        playerMana = postacMana;
+
+        //Odświeżenie paska życia potwora
+        TextView potworHp = (TextView) findViewById(R.id.textViewPotwor);
+
+        progressBarPotwor.setMax(potwor.hp);
+        progressBarPotwor.setProgress(monsterHp);
+        potworHp.setText(potwor.hp + "/" + potwor.hp);
+
+    }
+
+    //Rozpoczęcie walki
+    public void walka(View view) {
+
+        TextView walka = (TextView) findViewById(R.id.walka);
+        walka.setMovementMethod(new ScrollingMovementMethod());
+
+        slaying = true;
+        firstAttackSpell = 0;
+
+        if (playerHp > 0 && monsterHp > 0 && slaying == true) {
+
+            double checkCrit = Math.floor(Math.random() * 100);
+
+            double crit = Math.floor((postacAtk * 2 - postacAtk / 2 + 1) + postacAtk / 2 - potwor.def) +
+                    (Math.floor((postacAtk * 2 - postacAtk / 2 + 1) + postacAtk / 2 - potwor.def) * (postacCrit / 100));
+            youHit = (Math.floor(Math.random() * (postacAtk * 2 - postacAtk / 2 + 1)) + postacAtk / 2 - potwor.def);
+            mobHit = Math.floor((Math.random() * 2) * (potwor.atk * 2 - (postacDef / 2)));
+
+            if (runda == 0) {
+                oknoWalki.append("Round " + numerRundy + "\n");
+            }
+
+            if (checkCrit < postacCritChance){
+                if (monsterHp - (int)crit < 0){
+                    oknoWalki.append("A " + potwor.name + " loses " + monsterHp + " health points due to your critical attack.\n");
+                    monsterHp = 0;
+                }else {
+                    monsterHp -= (int)crit;
+                    oknoWalki.append("A " + potwor.name + " loses " + (int)crit + " health points due to your critical attack.\n");
+                }
+            } else {
+                if ((int)youHit < 0){
+                    youHit = 0;
+                    monsterHp -= (int)youHit;
+                } else {
+                    if(monsterHp - (int)youHit < 0) {
+                        oknoWalki.append("A " + potwor.name + " loses " + monsterHp + " health points due to your attack.\n");
+                        monsterHp = 0;
+                    }else {
+                        monsterHp -= (int)youHit;
+                        oknoWalki.append("A " + potwor.name + " loses " + (int)youHit + " health points due to your attack.\n");
+                    }
+                }
+
+            }
+
+            //Aktualizacja paska życia potwora
+            if (monsterHp < 0) {
+                progressBarPotwor.setProgress(0);
+                TextView potworHp = (TextView) findViewById(R.id.textViewPotwor);
+                potworHp.setText(0 + "/" + potwor.hp);
+            } else {
+                progressBarPotwor.setProgress(monsterHp);
+                TextView potworHp = (TextView) findViewById(R.id.textViewPotwor);
+                potworHp.setText(monsterHp + "/" + potwor.hp);
+            }
+
+            //Aktualizacja paska życia postaci
+            if (monsterHp > 0) {
+                oknoWalki.append("You lose " + (int)mobHit + " health points due to an attack by a " + potwor.name + ".\n");
+                playerHp -= (int)mobHit;
+                if (playerHp < 0) {
+                    progressBarHp.setProgress(0);
+                    TextView hp = (TextView) findViewById(R.id.textViewHp);
+                    hp.setText(0 + "/" + postacHp);
+                } else {
+                    progressBarHp.setProgress(playerHp);
+                    TextView hp = (TextView) findViewById(R.id.textViewHp);
+                    hp.setText(playerHp + "/" + postacHp);
+                }
+
+            }
+            numerRundy += 1;
+        }
+        przebiegWalki();
+
+    }
+
+    //Zapis gry
+    public void zapis() {
+
+        SharedPreferences saveGame = getSharedPreferences("Save", MODE_PRIVATE);
+        SharedPreferences.Editor save = saveGame.edit();
+        save.putInt("hp", postacHp);
+        save.putInt("mana", postacMana);
+        save.putInt("lvl", postacLvl);
+        save.putInt("mlvl", postacMlvl);
+        save.putInt("exp", postacExp);
+        save.putInt("mExp", postacmExp);
+        save.putInt("atk", postacAtk);
+        save.putInt("def", postacDef);
+        save.putString("sword", postacSword);
+        save.putString("shield", postacShield);
+        save.putInt("money", postacMon);
+        save.putInt("checkLvlAdvance", checkLvlAdvance);
+        save.putInt("checkMlvlAdvance", checkMlvlAdvance);
+        save.putInt("sp", postacSp);
+        save.putInt("crit", postacCrit);
+        save.putInt("critChance", postacCritChance);
+        save.putInt("hpotion", healthPotion);
+        save.putInt("mpotion", manaPotion);
+        save.apply();
+
+    }
+
+    //Wczytanie gry
+    public void odczyt() {
+
+        //Wczytanie zmiennej "checkLvlAdvance" i "checkMlvlAdvance" potrzebnych do sprawdzania awansów
+        SharedPreferences loadE = getSharedPreferences("Save", MODE_PRIVATE);
+        SharedPreferences.Editor load = loadE.edit();
+        checkLvlAdvance = loadE.getInt("checkLvlAdvance", 1);
+        checkMlvlAdvance = loadE.getInt("checkMlvlAdvance", 0);
+        postacMon = loadE.getInt("money", 0);
+        postacLvl = loadE.getInt("lvl", 1);
+        postacMlvl = loadE.getInt("mlvl", 0);
+        postacAtk = loadE.getInt("atk", 5);
+        postacDef = loadE.getInt("def", 5);
+        postacHp = loadE.getInt("hp", 200);
+        postacMana = loadE.getInt("mana", 200);
+        postacSp = loadE.getInt("sp", 0);
+        postacExp = loadE.getInt("exp", 0);
+        postacmExp = loadE.getInt("mExp", 0);
+        postacCrit = loadE.getInt("crit", 5);
+        postacCritChance = loadE.getInt("critChance", 10);
+        postacSword = loadE.getString("sword", "Sword+0");
+        postacShield = loadE.getString("shield", "Shield+0");
+        healthPotion = loadE.getInt("hpotion", 5);
+        manaPotion = loadE.getInt("mpotion", 5);
+
+    }
+
+    //Opuszczenie okna walki
+    public void uciekaj(View view) {
+
+        zapis();
+
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        afterRun = 1;
+        WalkaActivity.dataPacketFight.putInt("afterRun", afterRun);
+        finish();
+    }
+
+    //Użycie czaru
+    public void spell(View view) {
+
+        slaying = true;
+
+        if (playerMana >= 50) {
+            if (postacMlvl == 0) {
+                youHit = Math.floor(((Math.random() * 2) + 1) + 7);
+            } else {
+                youHit = Math.floor(((Math.random() * 2) + 1) * (postacMlvl * 7));
+            }
+
+            if (firstAttackSpell == 0) {
+                oknoWalki.append("Round " + numerRundy + "\n");
+                if (monsterHp - (int)youHit < 0) {
+                    oknoWalki.append("A " + potwor.name + " loses " + monsterHp + " health points due to your magic attack.\n");
+                    monsterHp = 0;
+                }else {
+                    oknoWalki.append("A " + potwor.name + " loses " + (int)youHit + " health points due to your magic attack.\n");
+                    monsterHp -= (int)youHit;
+                }
+            } else {
+                if (monsterHp - (int)youHit < 0) {
+                    oknoWalki.append("A " + potwor.name + " loses " + monsterHp + " health points due to your magic attack.\n");
+                    monsterHp = 0;
+                }else {
+                    oknoWalki.append("A " + potwor.name + " loses " + (int)youHit + " health points due to your magic attack.\n");
+                    monsterHp -= (int)youHit;
+                }
+            }
+
+            //Dodanie mexpa za użycie czaru
+            postacmExp += 15;
+
+            //Aktualizacja paska życia potwora
+            progressBarPotwor.setProgress(monsterHp);
+            TextView potworHp = (TextView) findViewById(R.id.textViewPotwor);
+            potworHp.setText(monsterHp + "/" + potwor.hp);
+
+            //Wyświetlenie w oknie walki danych
+            TextView walka = (TextView) findViewById(R.id.walka);
+            walka.setText(oknoWalki);
+
+            //Odjęcie many za użycie czaru
+            playerMana -= 50;
+
+            //Aktualizacja paska many
+            progressBarMana.setProgress(playerMana);
+            TextView mana = (TextView) findViewById(R.id.textViewMana);
+            mana.setText(playerMana + "/" + postacMana);
+
+            przebiegWalki();
+
+            runda = 1;
+            firstAttackSpell = 1;
+
+            //Sprawdzenie czy jest awans Mlvl
+            for (int i = 100; i >= 0; i--) {
+                if (postacmExp >= tabelamExpa.get(i) && postacmExp > 59) {
+                    postacMlvl = i;
+                    if (postacMlvl > checkMlvlAdvance) {
+
+                        AlertDialog.Builder awans = new AlertDialog.Builder(this);
+                        awans.setMessage("You advanced to magic level " + i + "!")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create();
+                        awans.show();
+
+                        checkMlvlAdvance += 1;
+                        zapis();
+                    }
+                    break;
+                }
+            }
+
+        } else {
+            AlertDialog.Builder lessMana = new AlertDialog.Builder(this);
+            lessMana.setMessage("You have not enough mana!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create();
+            lessMana.show();
+        }
+    }
+
+    //Leczenie
+    public void heal(View view) {
+
+        slaying = true;
+        double heal;
+
+        if (playerMana >= 100) {
+            if (postacMlvl == 0) {
+                heal = (Math.floor(Math.random() * (15 - 5 + 1))+5);
+            } else {
+                heal = (Math.floor(Math.random() * (((postacMlvl/0.05)+40) - postacMlvl/0.05 + 1))+postacMlvl/0.05);
+            }
+
+            if (firstAttackSpell == 0) {
+                oknoWalki.append("Round " + numerRundy + "\n");
+                if (playerHp == postacHp) {
+                    oknoWalki.append("You have full health points. \n");
+                }else if ((playerHp + (int)heal) > postacHp) {
+                    oknoWalki.append("You healed for " + (postacHp-playerHp) + " health points.\n");
+                } else {oknoWalki.append("You healed for " + (int)heal + " health points.\n");}
+            } else {
+                if (playerHp == postacHp) {
+                    oknoWalki.append("You have full health points. \n");
+                } else if ((playerHp + (int)heal) > postacHp) {
+                    oknoWalki.append("You healed for " + (postacHp-playerHp) + " health points.\n");
+                } else {oknoWalki.append("You healed for " + (int)heal + " health points.\n");}
+            }
+            TextView walka = (TextView) findViewById(R.id.walka);
+            if ((playerHp + (int)heal) > postacHp) {
+                playerHp = postacHp;
+            } else {
+                playerHp += (int)heal;
+            }
+
+            //Dodanie mexpa za użycie czaru
+            postacmExp += 35;
+
+            //Wyświetlenie w oknie walki danych
+            walka.setText(oknoWalki);
+
+            //Odjęcie many za użycie czaru
+            playerMana -= 100;
+
+            //Aktualizacja pasków życia i many postaci
+            TextView mana = (TextView) findViewById(R.id.textViewMana);
+            TextView hp = (TextView) findViewById(R.id.textViewHp);
+            hp.setText(playerHp + "/" + postacHp);
+            mana.setText(playerMana + "/" + postacMana);
+            progressBarHp.setProgress(playerHp);
+            progressBarMana.setProgress(playerMana);
+
+            runda = 1;
+            firstAttackSpell = 1;
+
+            //Sprawdzenie czy jest awans Mlvl
+            for (int i = 100; i >= 0; i--) {
+                if (postacmExp >= tabelamExpa.get(i) && postacmExp > 59) {
+                    postacMlvl = i;
+                    if (postacMlvl > checkMlvlAdvance) {
+
+                        AlertDialog.Builder awans = new AlertDialog.Builder(this);
+                        awans.setMessage("You advanced to magic level " + i + "!")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create();
+                        awans.show();
+
+                        checkMlvlAdvance += 1;
+                        zapis();
+                    }
+                    break;
+                }
+            }
+
+        } else {
+            AlertDialog.Builder lessMana = new AlertDialog.Builder(this);
+            lessMana.setMessage("You have not enough mana!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create();
+            lessMana.show();
+        }
+
+    }
+
+    //Konfiguracja pasków życia i many
+    public void resetBars() {
+
+        //Konfiguracja pasków życia i many
+        progressBarHp = (ProgressBar) findViewById(R.id.progressBarHp);
+        progressBarMana = (ProgressBar) findViewById(R.id.progressBarMana);
+        progressBarPotwor = (ProgressBar) findViewById(R.id.progressBarPotwor);
+
+        progressBarHp.setProgress(playerHp);
+        progressBarHp.setMax(postacHp);
+        progressBarHp.setProgress(postacHp);
+
+        progressBarMana.setProgress(playerMana);
+        progressBarMana.setMax(postacMana);
+        progressBarMana.setProgress(postacMana);
+
+        //Deklaracja i wypełnienie pasków życia i many postaci
+        TextView hp = (TextView) findViewById(R.id.textViewHp);
+        TextView mana = (TextView) findViewById(R.id.textViewMana);
+
+        hp.setText(postacHp + "/" + postacHp);
+        mana.setText(postacMana + "/" + postacMana);
+
+    }
+
+    //Trafienie na potwora
+    public void explore(View view) {
+
+        //Konfiguracja pasków życia i many
+        resetBars();
+
+        loot = Math.floor((Math.random() * 100) + 1);
+        firstAttackSpell = 0;
+
+        monster(view);
+        AlertDialog.Builder atak = new AlertDialog.Builder(this);
+        atak.setMessage(potwor.name + " has attacked you!\n")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        atak.show();
+
+        TextView monsterName = (TextView) findViewById(R.id.monsterName);
+        TextView walka = (TextView) findViewById(R.id.walka);
+        walka.setMovementMethod(new ScrollingMovementMethod());
+        monsterName.clearComposingText();
+        walka.clearComposingText();
+        walka.scrollTo(0, 0);
+        StringBuilder v = new StringBuilder("");
+        v.append(potwor.name);
+        monsterName.setText(v);
+        StringBuilder m = new StringBuilder("");
+        m.append("");
+        walka.setText(m);
+        oknoWalki.delete(0, oknoWalki.length());
+
+
+        //Numer rundy
+        numerRundy = 1;
+
+        //Deklaracja przcyisków
+        Button explore = (Button) findViewById(R.id.explore);
+        Button walcz = (Button) findViewById(R.id.walcz);
+        Button czar = (Button) findViewById(R.id.spell);
+        Button heal = (Button) findViewById(R.id.heal);
+        Button potions = (Button) findViewById(R.id.potions);
+
+        //Wyszarzenie i aktywowanie przycisków po rozpoczęciu walki
+        explore.setClickable(false);
+        explore.setEnabled(false);
+        walcz.setClickable(true);
+        walcz.setEnabled(true);
+        czar.setEnabled(true);
+        czar.setClickable(true);
+        heal.setEnabled(true);
+        heal.setClickable(true);
+        potions.setEnabled(true);
+        potions.setClickable(true);
+
+    }
+
+    //Sprawdzenie śmierci i dodanie loota
+    public void przebiegWalki(){
+
+        //Deklaracja przycisków i okna walki
+        TextView walka = (TextView) findViewById(R.id.walka);
+        walka.setMovementMethod(new ScrollingMovementMethod());
+
+        Button czar = (Button) findViewById(R.id.spell);
+        Button walcz = (Button) findViewById(R.id.walcz);
+        Button heal = (Button) findViewById(R.id.heal);
+        Button explore = (Button) findViewById(R.id.explore);
+        Button potions = (Button) findViewById(R.id.potions);
+
+        //Dopóki potwór lub postać żyją
+        if (slaying == true) {
+
+            //Jeśli postać umrze
+            if (playerHp <= 0) {
+                if (postacExp > 0) {
+                    double loseExp = (Math.floor(postacExp * 0.2));
+                    double loseMexp = (Math.floor(postacmExp * 0.23));
+                    oknoWalki.append("You are dead. \nYou lost " + (int) loseExp + " experience.");
+                    postacExp -= (int)loseExp;
+                    if (postacmExp >= (int)loseMexp) {
+                        postacmExp -= (int)loseMexp;
+                    }
+
+                    AlertDialog.Builder dead = new AlertDialog.Builder(this);
+                    dead.setMessage("You are dead!")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    zapis();
+                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                    int afterRun = 1;
+                                    WalkaActivity.dataPacketFight.putInt("afterRun", afterRun);
+                                    finish();
+                                }
+                            })
+                            .create();
+                    dead.show();
+
+                } else {
+                    oknoWalki.append("You are dead. \nYou lost 0 experience.");
+                }
+
+                slaying = false;
+
+                //Wyświetlenie danych w oknie walki
+                walka.setText(oknoWalki);
+
+                //Jeśli potwór umrze
+            } else if (monsterHp <= 0) {
+                oknoWalki.append("You have defeated " + potwor.name + "!" + "\n" + "You have received:" + "\n" + potwor.exp + " experience" + "\n" + (int)loot + " gold!");
+
+                //Dodanie zdobytego expa i pieniędzy
+                postacExp += potwor.exp;
+                postacMon += (int)loot;
+                slaying = false;
+
+                //Aktualizacja przycisków po walce
+                explore.setClickable(true);
+                explore.setEnabled(true);
+                walcz.setClickable(false);
+                walcz.setEnabled(false);
+                czar.setClickable(false);
+                czar.setEnabled(false);
+                heal.setEnabled(false);
+                heal.setClickable(false);
+                potions.setEnabled(false);
+                potions.setClickable(false);
+            }
+            //Wypisanie w TextView przebiegu walki i rezultatu
+            walka.setText(oknoWalki);
+            runda = 0;
+
+        }
+        //Dodanie zdobytego expa i pieniędzy do zmiennych
+        currentExp += postacExp;
+        currentMoney += postacMon;
+        currentMagicExp += postacmExp;
+
+        zapis();
+
+        //Sprawadzenie czy jest awans poziomu i aktualizacja statystyk
+        for (int i = 100; i >= 0; i--) {
+            if (postacExp >= tabelaExpa.get(i) && postacExp > 59) {
+                postacLvl = i;
+                if (postacLvl > checkLvlAdvance) {
+
+                    AlertDialog.Builder awans = new AlertDialog.Builder(this);
+                    awans.setMessage("You advanced to level " + i + "!")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .create();
+                    awans.show();
+
+                    //Co 5 lvli dodanie ataku i obrony
+                    if (postacLvl % 5 == 0) {
+                        postacAtk += 1;
+                        postacDef += 1;
+                    }
+                    postacHp += 15;
+                    postacMana += 5;
+                    //Sprawdzenie czy dodać Skill Point (jeśli ten sam lvl wbity po raz drugi to nie doda)
+                    if (postacSp < postacLvl - 1) {
+                        postacSp += 1;
+                    }
+                    checkLvlAdvance += 1;
+                    zapis();
+                }
+                break;
+            }
+        }
+
+        //Sprawdzenie czy jest awans Mlvl
+
+
+
+        //Sprawdzenie czy spadł poziom
+        if (postacExp < tabelaExpa.get(postacLvl)) {
+
+            AlertDialog.Builder downgrade = new AlertDialog.Builder(this);
+            downgrade.setMessage("You were downgraded from level " + postacLvl + " to level " + (postacLvl - 1) + "!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create();
+            downgrade.show();
+
+            postacLvl -= 1;
+            postacAtk -= 0;
+            postacDef -= 0;
+            postacHp -= 15;
+            postacMana -= 5;
+        }
+
+        //Sprawdzenie czy spadl mlvl
+        if (postacmExp < tabelamExpa.get(postacMlvl)) {
+            AlertDialog.Builder nieawansm = new AlertDialog.Builder(this);
+            nieawansm.setMessage("You were downgraded from magic level " + postacMlvl + " to level " + (postacMlvl - 1) + "!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create();
+            nieawansm.show();
+            postacMlvl -= 1;
+        }
+
+        //Sprawdzenie ekwipunku
+        if (postacSword.equals(miecz_0.name) && postacAtk < miecz_0.atk) {
+            postacAtk += miecz_0.atk;
+            if (postacShield.equals(tarcza_0.name)) {
+                postacDef += (miecz_0.def + tarcza_0.def);
+            } else if (postacShield.equals(tarcza_1.name)) {
+                postacDef += (miecz_0.def + tarcza_1.def);
+            } else if (postacShield.equals(tarcza_2.name)) {
+                postacDef += (miecz_0.def + tarcza_2.def);
+            }
+        } else if (postacSword.equals(miecz_1.name) && postacAtk < miecz_1.atk) {
+            postacAtk += miecz_1.atk;
+            if (postacShield.equals(tarcza_0.name)) {
+                postacDef += (miecz_0.def + tarcza_0.def);
+            } else if (postacShield.equals(tarcza_1.name)) {
+                postacDef += (miecz_0.def + tarcza_1.def);
+            } else if (postacShield.equals(tarcza_2.name)) {
+                postacDef += (miecz_0.def + tarcza_2.def);
+            }
+        } else if (postacSword.equals(miecz_2.name) && postacAtk < miecz_2.atk) {
+            postacAtk += miecz_2.atk;
+            if (postacShield.equals(tarcza_0.name)) {
+                postacDef += (miecz_0.def + tarcza_0.def);
+            } else if (postacShield.equals(tarcza_1.name)) {
+                postacDef += (miecz_0.def + tarcza_1.def);
+            } else if (postacShield.equals(tarcza_2.name)) {
+                postacDef += (miecz_0.def + tarcza_2.def);
+            }
+        }
+
+        zapis();
+    }
+
+}

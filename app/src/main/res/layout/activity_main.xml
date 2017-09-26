@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.rafal.gra.MainActivity"
+    android:background="#575757">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:id="@+id/mainTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/hunt"
+        android:scrollbars = "vertical"
+        android:background="#ffffff" />
+
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hunt"
+        android:id="@+id/hunt"
+        android:onClick="hunt"
+        android:layout_above="@+id/statistics"
+        android:layout_toLeftOf="@+id/skille"
+        android:layout_alignLeft="@+id/statistics"
+        android:layout_alignStart="@+id/statistics" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Statistics"
+        android:onClick="statistics"
+        android:id="@+id/statistics"
+        android:layout_above="@+id/expTable"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Exit"
+        android:id="@+id/exit"
+        android:onClick="exitGame"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/statistics"
+        android:layout_alignStart="@+id/statistics"
+        android:layout_alignRight="@+id/statistics"
+        android:layout_alignEnd="@+id/statistics" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Skills"
+        android:onClick="skills"
+        android:id="@+id/skille"
+        android:layout_above="@+id/expTable"
+        android:layout_toRightOf="@+id/statistics" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Equipment"
+        android:id="@+id/eq"
+        android:onClick="equipment"
+        android:layout_above="@+id/expTable"
+        android:layout_toLeftOf="@+id/statistics"
+        android:layout_toStartOf="@+id/statistics" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Shop"
+        android:id="@+id/shop"
+        android:onClick="shop"
+        android:layout_above="@+id/exit"
+        android:layout_toLeftOf="@+id/expTable"
+        android:layout_alignLeft="@+id/eq"
+        android:layout_alignStart="@+id/eq" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Quests"
+        android:id="@+id/quests"
+        android:onClick="quests"
+        android:layout_above="@+id/statistics"
+        android:layout_toLeftOf="@+id/hunt"
+        android:layout_alignLeft="@+id/eq"
+        android:layout_alignStart="@+id/eq" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Depot"
+        android:id="@+id/buttonDepot"
+        android:onClick="depot"
+        android:layout_below="@+id/statistics"
+        android:layout_toRightOf="@+id/expTable" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:onClick="logout"
+        android:id="@+id/buttonLogout"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/exit"
+        android:layout_alignRight="@+id/buttonDepot"
+        android:layout_alignEnd="@+id/buttonDepot" />
+
+    <Button
+        android:text="Rankings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/exit"
+        android:id="@+id/rankings"
+        android:layout_alignLeft="@+id/shop"
+        android:layout_alignStart="@+id/shop" />
+
+    <Button
+        android:text="Craft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mainTextView"
+        android:layout_toRightOf="@+id/hunt"
+        android:layout_toEndOf="@+id/hunt"
+        android:id="@+id/craft" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Exp table"
+        android:id="@+id/expTable"
+        android:onClick="showExperienceTable"
+        android:layout_alignBaseline="@+id/shop"
+        android:layout_alignBottom="@+id/shop"
+        android:layout_alignLeft="@+id/exit"
+        android:layout_alignStart="@+id/exit"
+        android:layout_toLeftOf="@+id/skille"
+        android:layout_toStartOf="@+id/skille" />
+
+
+</RelativeLayout>

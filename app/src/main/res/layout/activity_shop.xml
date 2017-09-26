@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.rafal.gra.ShopActivity"
+    android:background="#575757">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:gravity = "center"
+        android:id="@+id/textViewGold"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="ITEM"
+        android:id="@+id/textViewItem"
+        android:textAlignment="center"
+        android:layout_alignTop="@+id/textViewPrice"
+        android:layout_alignLeft="@+id/imageView"
+        android:layout_alignStart="@+id/imageView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="100"
+        android:id="@+id/textViewHP"
+        android:gravity="center"
+        android:layout_below="@+id/textViewPrice"
+        android:layout_alignBottom="@+id/imageView"
+        android:layout_alignLeft="@+id/textViewPrice"
+        android:layout_alignStart="@+id/textViewPrice"
+        android:layout_alignRight="@+id/textViewPrice"
+        android:layout_alignEnd="@+id/textViewPrice" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="PRICE"
+        android:id="@+id/textViewPrice"
+        android:layout_below="@+id/textViewGold"
+        android:layout_toRightOf="@+id/imageView"
+        android:layout_toEndOf="@+id/imageView"
+        android:layout_marginLeft="40dp"
+        android:layout_marginStart="40dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="QUANTITY"
+        android:id="@+id/textViewQuantity"
+        android:layout_alignTop="@+id/textViewPrice"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center"
+        android:layout_toEndOf="@+id/textViewPrice"
+        android:layout_toRightOf="@+id/textViewPrice"
+        android:layout_alignLeft="@+id/buttonLeftHP"
+        android:layout_alignStart="@+id/buttonLeftHP" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="0"
+        android:id="@+id/textViewQuantityHP"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:layout_below="@+id/textViewPrice"
+        android:layout_alignBottom="@+id/buttonRightHP"
+        android:layout_alignRight="@+id/buttonBuy"
+        android:layout_alignEnd="@+id/buttonBuy"
+        android:layout_alignLeft="@+id/textViewQuantity"
+        android:layout_alignStart="@+id/textViewQuantity" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="->"
+        android:id="@+id/buttonRightHP"
+        android:onClick="rightHealthPotion"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/textViewQuantity" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="&lt;-"
+        android:id="@+id/buttonLeftHP"
+        android:onClick="leftHealthPotion"
+        android:layout_below="@+id/textViewQuantity"
+        android:layout_toLeftOf="@+id/buttonRightHP"
+        android:layout_toStartOf="@+id/buttonRightHP"
+        android:layout_marginRight="27dp"
+        android:layout_marginEnd="27dp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:src="@mipmap/health_potion"
+        android:layout_below="@+id/textViewItem"
+        android:layout_alignRight="@+id/buttonBack"
+        android:layout_alignEnd="@+id/buttonBack" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView2"
+        android:layout_marginTop="30dp"
+        android:src="@mipmap/mana_potion"
+        android:layout_below="@+id/imageView"
+        android:layout_alignLeft="@+id/imageView"
+        android:layout_alignStart="@+id/imageView" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Buy"
+        android:id="@+id/buttonBuy"
+        android:onClick="buy"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:id="@+id/buttonBack"
+        android:onClick="back"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="0"
+        android:id="@+id/textViewQuantityMP"
+        android:layout_alignRight="@+id/buttonBuy"
+        android:layout_alignEnd="@+id/buttonBuy"
+        android:layout_alignLeft="@+id/buttonLeftHP"
+        android:layout_alignStart="@+id/buttonLeftHP"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:layout_alignBottom="@+id/imageView2"
+        android:layout_alignTop="@+id/imageView2" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="->"
+        android:onClick="rightManaPotion"
+        android:id="@+id/buttonRightMP"
+        android:layout_alignTop="@+id/buttonLeftMP"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="120"
+        android:id="@+id/textViewMP"
+        android:gravity="center"
+        android:layout_alignTop="@+id/imageView2"
+        android:layout_alignLeft="@+id/textViewHP"
+        android:layout_alignStart="@+id/textViewHP"
+        android:layout_alignBottom="@+id/imageView2"
+        android:layout_alignRight="@+id/textViewHP"
+        android:layout_alignEnd="@+id/textViewHP" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/textViewFinalPrice"
+        android:gravity="center"
+        android:layout_alignTop="@+id/buttonBack"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="&lt;-"
+        android:id="@+id/buttonLeftMP"
+        android:onClick="leftManaPotion"
+        android:layout_alignTop="@+id/textViewQuantityMP"
+        android:layout_alignLeft="@+id/textViewQuantityMP"
+        android:layout_alignStart="@+id/textViewQuantityMP" />
+
+</RelativeLayout>

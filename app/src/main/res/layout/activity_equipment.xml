@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.rafal.gra.EquipmentActivity"
+    android:background="#575757">
+
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageViewHelmet"
+        android:src="@mipmap/helmet_empty"
+        android:onClick="imageClickHelmet"
+        android:tag=""
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageViewAmulet"
+        android:scaleType="fitCenter"
+        android:onClick="imageClickAmulet"
+        android:tag=""
+        android:layout_alignTop="@+id/imageViewHelmet"
+        android:layout_toLeftOf="@+id/imageViewHelmet"
+        android:layout_toStartOf="@+id/imageViewHelmet"
+        android:src="@mipmap/amulet_empty" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@mipmap/right_head"
+        android:id="@+id/imageViewRightHead"
+        android:layout_alignBottom="@+id/imageViewHelmet"
+        android:layout_toRightOf="@+id/imageViewHelmet"
+        android:layout_toEndOf="@+id/imageViewHelmet" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageViewWeapon"
+        android:onClick="imageClickWeapon"
+        android:tag=""
+        android:src="@mipmap/weapon_empty"
+        android:layout_below="@+id/imageViewHelmet"
+        android:layout_alignLeft="@+id/imageViewAmulet"
+        android:layout_alignStart="@+id/imageViewAmulet" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageViewArmor"
+        android:src="@mipmap/armor_empty"
+        android:onClick="imageClickArmor"
+        android:tag=""
+        android:layout_alignTop="@+id/imageViewWeapon"
+        android:layout_toRightOf="@+id/imageViewWeapon"
+        android:layout_toEndOf="@+id/imageViewWeapon" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageViewShield"
+        android:src="@mipmap/shield_empty"
+        android:onClick="imageClickShield"
+        android:tag=""
+        android:layout_alignTop="@+id/imageViewArmor"
+        android:layout_toRightOf="@+id/imageViewArmor"
+        android:layout_toEndOf="@+id/imageViewArmor" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageViewRingLeft"
+        android:src="@mipmap/ring_left_empty"
+        android:onClick="imageClickRingLeft"
+        android:tag=""
+        android:layout_below="@+id/imageViewWeapon"
+        android:layout_alignLeft="@+id/imageViewWeapon"
+        android:layout_alignStart="@+id/imageViewWeapon" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageViewLegs"
+        android:src="@mipmap/legs_empty"
+        android:onClick="imageClickLegs"
+        android:tag=""
+        android:layout_below="@+id/imageViewWeapon"
+        android:layout_toRightOf="@+id/imageViewRingLeft"
+        android:layout_toEndOf="@+id/imageViewRingLeft" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageViewRingRight"
+        android:src="@mipmap/ring_right_empty"
+        android:layout_below="@+id/imageViewArmor"
+        android:onClick="imageClickRingRight"
+        android:tag=""
+        android:layout_toRightOf="@+id/imageViewArmor"
+        android:layout_toEndOf="@+id/imageViewArmor" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageViewHp"
+        android:src="@mipmap/h_potion_empty"
+        android:onClick="imageClickHp"
+        android:tag=""
+        android:layout_below="@+id/imageViewRingLeft"
+        android:layout_alignLeft="@+id/imageViewRingLeft"
+        android:layout_alignStart="@+id/imageViewRingLeft" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageViewBoots"
+        android:src="@mipmap/boots_empty"
+        android:onClick="imageClickBoots"
+        android:tag=""
+        android:layout_below="@+id/imageViewRingLeft"
+        android:layout_toRightOf="@+id/imageViewRingLeft"
+        android:layout_toEndOf="@+id/imageViewRingLeft" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageViewMp"
+        android:src="@mipmap/m_potion_empty"
+        android:onClick="imageClickMp"
+        android:tag=""
+        android:layout_below="@+id/imageViewLegs"
+        android:layout_toRightOf="@+id/imageViewLegs"
+        android:layout_toEndOf="@+id/imageViewLegs" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:onClick="back"
+        android:id="@+id/buttonBack"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+    <GridView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gridView"
+        android:numColumns="4"
+        android:horizontalSpacing="1dp"
+        android:verticalSpacing="1dp"
+        android:layout_marginTop="3dp"
+        android:layout_below="@+id/imageViewHp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/buttonBack" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textViewHp"
+        android:textColor="#FFFFFF"
+        android:layout_alignBottom="@+id/imageViewHp"
+        android:layout_toLeftOf="@+id/imageViewBoots"
+        android:layout_toStartOf="@+id/imageViewBoots"
+        android:layout_marginBottom="9dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textViewMp"
+        android:textColor="#FFFFFF"
+        android:layout_alignBaseline="@+id/textViewHp"
+        android:layout_alignBottom="@+id/textViewHp"
+        android:layout_alignRight="@+id/imageViewMp"
+        android:layout_alignEnd="@+id/imageViewMp" />
+
+
+</RelativeLayout>

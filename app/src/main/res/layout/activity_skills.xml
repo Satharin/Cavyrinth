@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.rafal.gra.SkillsActivity"
+    android:background="#575757">
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:id="@+id/exit"
+        android:onClick="back"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reset SP"
+        android:id="@+id/resetsp"
+        android:onClick="resetSp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:gravity = "center"
+        android:id="@+id/textViewSP"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:id="@+id/addHp"
+        android:onClick="addHp"
+        android:layout_alignTop="@+id/addCrit"
+        android:layout_alignRight="@+id/exit"
+        android:layout_alignEnd="@+id/exit" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:id="@+id/addMana"
+        android:onClick="addMana"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_alignTop="@+id/addHp"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:id="@+id/addAtk"
+        android:onClick="addAtk"
+        android:layout_below="@+id/textViewHealth"
+        android:layout_alignLeft="@+id/addHp"
+        android:layout_alignStart="@+id/addHp"
+        android:layout_marginTop="105dp" />
+        android:layout_below="@+id/textViewAttack"
+        android:layout_alignLeft="@+id/addHp"
+        android:layout_alignStart="@+id/addHp"
+        android:layout_marginTop="30dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:id="@+id/addDef"
+        android:onClick="addDef"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_above="@+id/textViewCritChan"
+        android:layout_centerHorizontal="true" />
+        //android:layout_below="@+id/textViewAttack"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="HP"
+        android:id="@+id/textViewHp"
+        android:layout_below="@+id/textViewSP"
+        android:layout_alignLeft="@+id/addHp"
+        android:layout_alignStart="@+id/addHp"
+        android:layout_marginTop="56dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="MANA"
+        android:id="@+id/textViewManaPoints"
+        android:layout_alignTop="@+id/textViewHp"
+        android:layout_alignLeft="@+id/addMana"
+        android:layout_alignStart="@+id/addMana" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="ATK"
+        android:id="@+id/textViewAtk"
+        android:layout_above="@+id/addDef"
+        android:layout_alignLeft="@+id/addAtk"
+        android:layout_alignStart="@+id/addAtk" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="DEF"
+        android:id="@+id/textViewDef"
+        android:layout_above="@+id/addDef"
+        android:layout_alignLeft="@+id/addDef"
+        android:layout_alignStart="@+id/addDef" />
+
+
+
+
+
+
+
+<Button
+style="?android:attr/buttonStyleSmall"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="ADD"
+android:id="@+id/addCrit"
+android:onClick="addCrit"
+android:layout_below="@+id/textViewManaPoints"
+android:layout_alignParentRight="true"
+android:layout_alignParentEnd="true"
+android:layout_marginRight="38dp"
+android:layout_marginEnd="38dp" />
+
+<Button
+style="?android:attr/buttonStyleSmall"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="ADD"
+android:id="@+id/addCritChance"
+android:onClick="addCritChance"
+    android:layout_alignTop="@+id/addAtk"
+    android:layout_alignLeft="@+id/addCrit"
+    android:layout_alignStart="@+id/addCrit" />
+
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:textAppearance="?android:attr/textAppearanceSmall"
+android:text="CRIT"
+android:id="@+id/textViewCrit"
+android:layout_alignTop="@+id/textViewManaPoints"
+android:layout_alignLeft="@+id/addCrit"
+android:layout_alignStart="@+id/addCrit" />
+
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:textAppearance="?android:attr/textAppearanceSmall"
+android:text="CRITCHANCE"
+android:id="@+id/textViewCritChance"
+    android:layout_above="@+id/addCritChance"
+    android:layout_alignLeft="@+id/addCritChance"
+    android:layout_alignStart="@+id/addCritChance" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Health points"
+        android:id="@+id/textViewHealth"
+        android:layout_below="@+id/addMana"
+        android:textAlignment="center"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/textViewManaP"
+        android:layout_toStartOf="@+id/textViewManaP" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text=" Mana points "
+        android:id="@+id/textViewManaP"
+
+        android:layout_below="@+id/addMana"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text=" Crit. %"
+        android:id="@+id/textView"
+        android:textAlignment="center"
+        android:layout_below="@+id/addCrit"
+        android:layout_alignLeft="@+id/resetsp"
+        android:layout_alignStart="@+id/resetsp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Attack"
+        android:id="@+id/textViewAttack"
+        android:textAlignment="center"
+        android:layout_below="@+id/addAtk"
+        android:layout_alignLeft="@+id/addAtk"
+        android:layout_alignStart="@+id/addAtk"
+        android:layout_alignRight="@+id/exit"
+        android:layout_alignEnd="@+id/exit" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Defence"
+        android:id="@+id/textViewDefence"
+        android:textAlignment="center"
+        android:layout_below="@+id/addDef"
+        android:layout_alignLeft="@+id/addDef"
+        android:layout_alignStart="@+id/addDef" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="   Crit. chance %"
+        android:id="@+id/textViewCritChan"
+
+        android:textAlignment="center"
+        android:layout_below="@+id/addCritChance"
+        android:layout_alignRight="@+id/resetsp"
+        android:layout_alignEnd="@+id/resetsp"
+        android:layout_toRightOf="@+id/textViewManaP"
+        android:layout_toEndOf="@+id/textViewManaP" />
+
+
+</RelativeLayout>

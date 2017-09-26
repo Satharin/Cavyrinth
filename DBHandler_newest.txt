@@ -1,0 +1,250 @@
+package com.example.rafal.gra;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DBHandler extends SQLiteOpenHelper {
+
+    // Database Version
+    private static final int DATABASE_VERSION = 1;
+    // Database Name
+    private static final String DATABASE_NAME = "gameInfo.sqlite";
+    //Where is the file
+    private static final String DB_PATH = "/data/data/com.example.rafal.gra/databases/";
+    // Contacts table name
+    private static final String TABLE_ELEMENTS = "elements";
+    private static final String ITEM_TABLE = "items";
+    // Shops Table Columns names
+    private static final String KEY_ID = "id";
+    private static final String KEY_ELEMENT = "element";
+    private static final String NAME = "name";
+    private static final String ATTACK = "attack";
+    private static final String DEFENCE = "defence";
+    private static final String HP = "hp";
+    private static final String TYPE = "type";
+    private static final String PRICE = "price";
+    private static final String RARITY = "rarity";
+    private static final String IMMUNITY = "immunity";
+    private static final String SENSIVITY = "sensivity";
+    private static final String GOLD_MAX = "gold_max";
+    private static final String ID_ELEMENT = "id_element"; //foreign key
+    private static final String LOW_ITEM_CHANCE = "low_item_chance";
+    private static final String MID_ITEM_CHANCE = "mid_item_chance";
+    private static final String HIGH_ITEM_CHANCE = "high_item_chance";
+
+    public DBHandler(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_ELEMENTS + "("
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_ELEMENT + " TEXT" + ")";
+
+        String CREATE_ITEM_TABLE = "CREATE TABLE " + ITEM_TABLE + "("
+                + KEY_ID + " INTEGER PRIMARY KEY," + NAME + " TEXT," + ATTACK + " INTEGER, "
+                + DEFENCE + " INTEGER, " + TYPE + " TEXT, " + PRICE + " INTEGER, "
+                + RARITY + " TEXT, " + "FOREIGN KEY(" + ID_ELEMENT + ") REFERENCES "
+                + TABLE_ELEMENTS + "(id) " + ")";
+
+        db.execSQL(CREATE_ITEM_TABLE);
+        db.execSQL(CREATE_CONTACTS_TABLE);
+    }
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+// Drop older table if existed
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ELEMENTS);
+// Creating tables again
+        onCreate(db);
+    }
+
+    @Override
+    public void onConfigure(SQLiteDatabase db){
+        db.setForeignKeyConstraintsEnabled(true);
+    }
+
+
+    // Adding new element
+    public void addElement(Element element) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_ELEMENT, element.getElement()); // Element name,
+// Inserting Row
+        db.insert(TABLE_ELEMENTS, null, values);
+        db.close(); // Closing database connection
+    }
+
+    // Adding new element
+    public void addItem(Item item) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(NAME, item.getName()); // Element name,
+        values.put(ATTACK, item.getAttack());
+        values.put(DEFENCE, item.getDefence());
+        values.put(TYPE, item.getType());
+        values.put(PRICE, item.getPrice());
+        values.put(RARITY, item.getRarity());
+        values.put(ID_ELEMENT, item.getID_Element());
+
+// Inserting Row
+        db.insert(ITEM_TABLE, null, values);
+        db.close(); // Closing database connection
+    }
+
+    // Getting one element
+    public Element getElement(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_ELEMENTS, new String[] { KEY_ID,
+                        KEY_ELEMENT }, KEY_ID + "=?",
+                new String[] { String.valueOf(id) }, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+        Element contact = new Element(Integer.parseInt(cursor.getString(0)),
+                cursor.getString(1));
+// return element
+        return contact;
+    }
+
+    // Getting one element
+    public Item getItem(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(ITEM_TABLE, new String[]{KEY_ID,
+                        NAME, ATTACK, DEFENCE, TYPE, PRICE, RARITY, ID_ELEMENT}, KEY_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+        Item item = new Item(Integer.parseInt(cursor.getString(0)),
+                cursor.getString(1), Integer.parseInt(cursor.getString(2)),Integer.parseInt(cursor.getString(3)),
+                cursor.getString(4), Integer.parseInt(cursor.getString(5)), cursor.getString(6),
+                cursor.getString(7));
+// return element
+        return item;
+    }
+
+    // Getting All Shops
+    public List<Element> getAllElements() {
+        List<Element> elementList = new ArrayList<Element>();
+// Select All Query
+        String selectQuery = "SELECT * FROM " + TABLE_ELEMENTS;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+// looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Element element = new Element();
+                element.setId(Integer.parseInt(cursor.getString(0)));
+                element.setElement(cursor.getString(1));
+// Adding contact to list
+                elementList.add(element);
+            } while (cursor.moveToNext());
+        }
+
+// return contact list
+        return elementList;
+    }
+    // Getting elements Count
+    public int getElementsCount() {
+        String countQuery = "SELECT * FROM " + TABLE_ELEMENTS;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        cursor.close();
+
+// return count
+        return cursor.getCount();
+    }
+
+    // Getting All Items
+    public List<Item> getAllItems() {
+        List<Item> itemList = new ArrayList<Item>();
+// Select All Query
+        String selectQuery = "SELECT * FROM " + ITEM_TABLE;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+// looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Item item = new Item();
+                item.setId(Integer.parseInt(cursor.getString(0)));
+                item.setName(cursor.getString(1));
+                item.setAttack(Integer.parseInt(cursor.getString(2)));
+                item.setDefence(Integer.parseInt(cursor.getString(3)));
+                item.setType(cursor.getString(4));
+                item.setPrice(Integer.parseInt(cursor.getString(5)));
+                item.setRarity(cursor.getString(6));
+                item.setID_Element(cursor.getString(7));
+// Adding contact to list
+                itemList.add(item);
+            } while (cursor.moveToNext());
+        }
+
+// return contact list
+        return itemList;
+    }
+    // Getting elements Count
+    public int getItemsCount() {
+        String countQuery = "SELECT * FROM " + ITEM_TABLE;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        cursor.close();
+
+// return count
+        return cursor.getCount();
+    }
+
+    // Updating an element
+    public int updateElement(Element element) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_ELEMENT, element.getElement());
+
+
+
+// updating row
+        return db.update(TABLE_ELEMENTS, values, KEY_ID + " = ?",
+                new String[]{String.valueOf(element.getElement())});
+    }
+
+    // Updating an element
+    public int updateItem(Item item) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(NAME, item.getName());
+        values.put(ATTACK, item.getAttack());
+        values.put(DEFENCE, item.getDefence());
+        values.put(TYPE, item.getType());
+        values.put(PRICE, item.getPrice());
+        values.put(RARITY, item.getRarity());
+        values.put(ID_ELEMENT, item.getID_Element());
+
+// updating row ????????????????????????????????????????????????????
+        return db.update(ITEM_TABLE, values, KEY_ID + " = ?", new String[]{String.valueOf(item.getName())});
+    }
+
+    // Deleting an element
+    public void deleteElement(Element element) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_ELEMENTS, KEY_ID + " = ?",
+                new String[] { String.valueOf(element.getId()) });
+        db.close();
+    }
+
+    // Deleting an element
+    public void deleteItem(Item item) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(ITEM_TABLE, KEY_ID + " = ?",
+                new String[]{String.valueOf(item.getId())});
+        db.close();
+    }
+}
+

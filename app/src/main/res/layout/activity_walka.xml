@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_Container"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.rafal.gra.WalkaActivity"
+    android:background="#575757">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Weapon"
+        android:onClick="startFight"
+        android:id="@+id/fight"
+        android:layout_marginBottom="95dp"
+        android:layout_above="@+id/escape"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Escape"
+        android:id="@+id/escape"
+        android:onClick="escape"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:id="@+id/fightWindow"
+        android:gravity = "bottom"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="#ffffff"
+        android:layout_above="@+id/fight"
+        android:layout_below="@+id/monsterName" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Spell"
+        android:id="@+id/spell"
+        android:onClick="spell"
+        android:layout_alignTop="@+id/fight"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Explore"
+        android:id="@+id/explore"
+        android:onClick="explore"
+        android:layout_alignBottom="@+id/spell"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:id="@+id/monsterName"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/spell"
+        android:layout_alignEnd="@+id/spell"
+        android:background="#FFFFFF"
+        android:textAlignment="center" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Heal"
+        android:id="@+id/heal"
+        android:onClick="heal"
+        android:layout_below="@+id/spell"
+        android:layout_alignLeft="@+id/spell"
+        android:layout_alignStart="@+id/spell" />
+
+    <ProgressBar
+        android:id="@+id/progressBarHp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        android:minHeight="50dp"
+        android:minWidth="200dp"
+        android:progressBackgroundTint="#ff1c1c"
+        android:progressTint="#ff1c1c"
+        android:backgroundTint="#ff1c1c"
+        android:layout_below="@+id/heal"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/escape"
+        android:layout_toStartOf="@+id/escape" />
+
+    <ProgressBar
+        android:id="@+id/progressBarMana"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        android:minHeight="50dp"
+        android:minWidth="200dp"
+        android:progressTint="#2a12ff"
+        android:layout_below="@+id/progressBarHp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/escape"
+        android:layout_toStartOf="@+id/escape" />
+
+    <ProgressBar
+        android:id="@+id/progressBarMonster"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        android:minHeight="50dp"
+        android:minWidth="200dp"
+        android:progressTint="#ff1c1c"
+        android:layout_above="@+id/progressBarMana"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/escape"
+        android:layout_toEndOf="@+id/escape" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:gravity="center"
+        android:id="@+id/textViewHp"
+        android:layout_alignTop="@+id/progressBarHp"
+        android:layout_toLeftOf="@+id/escape"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:gravity="center"
+        android:id="@+id/textViewManaP"
+        android:layout_alignTop="@+id/progressBarMana"
+        android:layout_alignLeft="@+id/progressBarMana"
+        android:layout_alignStart="@+id/progressBarMana"
+        android:layout_toLeftOf="@+id/escape"
+        android:layout_toStartOf="@+id/escape" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text=""
+        android:gravity="center"
+        android:id="@+id/textViewMonster"
+        android:layout_alignTop="@+id/progressBarMonster"
+        android:layout_toRightOf="@+id/escape"
+        android:layout_alignRight="@+id/heal"
+        android:layout_alignEnd="@+id/heal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Potions"
+        android:id="@+id/potions"
+        android:layout_below="@+id/explore"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+</RelativeLayout>

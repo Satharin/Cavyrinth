@@ -1,0 +1,15 @@
+package com.example.rafal.gra;
+
+public class Przedmioty {
+
+    String name;
+    Integer atk, def, chance;
+
+    public Przedmioty(String name, Integer atk, Integer def, Integer chance) {
+
+        this.name = name;
+        this.atk = atk;
+        this.def = def;
+        this.chance = chance;
+    }
+}

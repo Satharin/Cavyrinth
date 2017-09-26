@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#575757">
+
+
+    <TextView
+        android:text="How many to sell?"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textSize="13dp"
+        android:id="@+id/textView"
+        android:layout_alignRight="@+id/quantityRight"
+        android:layout_alignEnd="@+id/quantityRight"
+        android:textAlignment="center"
+        tools:textStyle="bold" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:text="&lt;-"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/quantityLeft"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:text="->"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/quantityRight"
+        android:layout_marginLeft="56dp"
+        android:layout_marginStart="56dp"
+        android:layout_below="@+id/textView"
+        android:layout_toRightOf="@+id/quantityLeft"
+        android:layout_toEndOf="@+id/quantityLeft" />
+
+    <TextView
+        android:text="0"
+        android:gravity="center_vertical|right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/quantityLeft"
+        android:id="@+id/textViewQuantity"
+        android:layout_below="@+id/textView"
+        android:textAlignment="center"
+        android:layout_alignRight="@+id/textView"
+        android:layout_alignEnd="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="SELL"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonSellFew"
+        android:layout_below="@+id/quantityLeft"
+        android:layout_toLeftOf="@+id/buttonBackFew"
+        android:layout_toStartOf="@+id/buttonBackFew"
+        android:layout_marginRight="13dp"
+        android:layout_marginEnd="13dp" />
+
+    <Button
+        android:text="BACK"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonBackFew"
+        android:layout_below="@+id/quantityRight"
+        android:layout_alignRight="@+id/quantityRight"
+        android:layout_alignEnd="@+id/quantityRight"
+        android:layout_marginRight="11dp"
+        android:layout_marginEnd="11dp" />
+
+</RelativeLayout>

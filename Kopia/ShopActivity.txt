@@ -1,0 +1,193 @@
+package com.example.rafal.gra;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class ShopActivity extends AppCompatActivity {
+
+    int postacMon, hpotion, mpotion;
+
+
+
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_shop);
+
+        TextView textViewIlosc2 = (TextView) findViewById(R.id.textViewIlosc2);
+        int ilosc2 = Integer.parseInt(textViewIlosc2.getText().toString());
+
+        Button left1 = (Button) findViewById(R.id.buttonLeft1);
+        Button left2 = (Button) findViewById(R.id.buttonLeft2);
+        Button right1 = (Button) findViewById(R.id.buttonRight1);
+        Button right2 = (Button) findViewById(R.id.buttonRight1);
+
+        odczyt();
+        check();
+
+        TextView textViewGold = (TextView) findViewById(R.id.textViewGold);
+        textViewGold.setText("Gold: " + Integer.toString(postacMon));
+
+    }
+
+
+    public void zapis() {
+
+        SharedPreferences saveGame = getSharedPreferences("Save", MODE_PRIVATE);
+        SharedPreferences.Editor save = saveGame.edit();
+        save.putInt("money", postacMon);
+        save.putInt("hpotion", hpotion);
+        save.putInt("mpotion", mpotion);
+        save.apply();
+    }
+
+    public void odczyt() {
+
+        SharedPreferences loadE = getSharedPreferences("Save", MODE_PRIVATE);
+        SharedPreferences.Editor editor4 = loadE.edit();
+        postacMon = loadE.getInt("money", 0);
+        hpotion = loadE.getInt("hpotion", 0);
+        mpotion = loadE.getInt("mpotion", 0);
+
+    }
+
+    public void powrot(View view) {
+
+        zapis();
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        finish();
+
+    }
+
+    public void left1(View view) {
+
+        TextView textViewIlosc1 = (TextView) findViewById(R.id.textViewIlosc1);
+        int ilosc1 = Integer.parseInt(textViewIlosc1.getText().toString());
+
+        if (ilosc1 > 0 && ilosc1 < 101) {
+            textViewIlosc1.setText(Integer.toString(ilosc1 - 1));
+        }
+
+        check();
+    }
+
+    public void right1(View view) {
+
+        TextView textViewIlosc1 = (TextView) findViewById(R.id.textViewIlosc1);
+        int ilosc1 = Integer.parseInt(textViewIlosc1.getText().toString());
+
+        if (ilosc1 >= 0 && ilosc1 < 100) {
+            textViewIlosc1.setText(Integer.toString(ilosc1 + 1));
+        }
+
+        check();
+
+    }
+
+    public void left2(View view) {
+
+        TextView textViewIlosc2 = (TextView) findViewById(R.id.textViewIlosc2);
+        int ilosc2 = Integer.parseInt(textViewIlosc2.getText().toString());
+
+        if (ilosc2 > 0 && ilosc2 < 101) {
+            textViewIlosc2.setText(Integer.toString(ilosc2 - 1));
+        }
+
+        check();
+
+    }
+
+    public void right2(View view) {
+
+        TextView textViewIlosc2 = (TextView) findViewById(R.id.textViewIlosc2);
+        int ilosc2 = Integer.parseInt(textViewIlosc2.getText().toString());
+
+        if (ilosc2 >= 0 && ilosc2 < 100) {
+            textViewIlosc2.setText(Integer.toString(ilosc2 + 1));
+        }
+
+        check();
+    }
+
+    public void check() {
+
+        Button left1 = (Button) findViewById(R.id.buttonLeft1);
+        Button right1 = (Button) findViewById(R.id.buttonRight1);
+        Button left2 = (Button) findViewById(R.id.buttonLeft2);
+        Button right2 = (Button) findViewById(R.id.buttonRight2);
+
+        TextView textViewIlosc1 = (TextView) findViewById(R.id.textViewIlosc1);
+        int ilosc1 = Integer.parseInt(textViewIlosc1.getText().toString());
+
+        TextView textViewIlosc2 = (TextView) findViewById(R.id.textViewIlosc2);
+        int ilosc2 = Integer.parseInt(textViewIlosc2.getText().toString());
+
+        if (ilosc1 == 0) {
+            left1.setClickable(false);
+            left1.setEnabled(false);
+        } else {
+            left1.setClickable(true);
+            left1.setEnabled(true);
+        }
+
+        if (ilosc1 == 99) {
+            right1.setClickable(false);
+            right1.setEnabled(false);
+        } else {
+            right1.setClickable(true);
+            right1.setEnabled(true);
+        }
+
+        if (ilosc2 == 0) {
+            left2.setClickable(false);
+            left2.setEnabled(false);
+        } else {
+            left2.setClickable(true);
+            left2.setEnabled(true);
+        }
+
+        if (ilosc2 == 99) {
+            right2.setClickable(false);
+            right2.setEnabled(false);
+        } else {
+            right2.setClickable(true);
+            right2.setEnabled(true);
+        }
+
+        toPay();
+    }
+
+    public void odswiez(View view) {
+
+        TextView textViewGold = (TextView) findViewById(R.id.textViewGold);
+        textViewGold.setText("Gold: " + Integer.toString(postacMon));
+
+    }
+
+    public void toPay() {
+
+        TextView textViewHP = (TextView) findViewById(R.id.textViewHP);
+        int hpPrice = Integer.parseInt(textViewHP.getText().toString());
+
+        TextView textViewMP = (TextView) findViewById(R.id.textViewMP);
+        int mpPrice = Integer.parseInt(textViewMP.getText().toString());
+
+        TextView textViewIlosc1 = (TextView) findViewById(R.id.textViewIlosc1);
+        int ilosc1 = Integer.parseInt(textViewIlosc1.getText().toString());
+
+        TextView textViewIlosc2 = (TextView) findViewById(R.id.textViewIlosc2);
+        int ilosc2 = Integer.parseInt(textViewIlosc2.getText().toString());
+
+        TextView textViewFinalPrice = (TextView) findViewById(R.id.textViewFinalPrice);
+        textViewFinalPrice.setText("To pay: " + Integer.toString((hpPrice * ilosc1) + (mpPrice * ilosc2)));
+
+    }
+
+}

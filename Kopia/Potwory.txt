@@ -1,0 +1,16 @@
+package com.example.rafal.gra;
+
+public class Potwory {
+
+    String name;
+    Integer hp, atk, def, exp;
+
+    public Potwory(String name, Integer hp, Integer atk, Integer def, Integer exp) {
+
+        this.name = name;
+        this.hp = hp;
+        this.atk = atk;
+        this.def = def;
+        this.exp = exp;
+    }
+}

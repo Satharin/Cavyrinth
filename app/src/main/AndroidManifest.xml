@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.rafal.gra">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:debuggable="true"
+        android:icon="@mipmap/fire_sword_img"
+        android:label="Cavyrinth"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+        <activity
+            android:name=".PolujActivity"
+            android:label="Hunt"
+
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".WalkaActivity"
+            android:label="Battle"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SkillsActivity"
+            android:label="Skills"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ShopActivity"
+            android:label="Shop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".QuestsActivity"
+            android:label="Quests"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".EquipmentActivity"
+            android:label="Equipment"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DepotActivity"
+            android:label="Depot"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LoginActivity"
+            android:label="Cavyrinth"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".CreateAccountActivity"
+            android:label="Create new account"
+            android:screenOrientation="portrait"></activity>
+    </application>
+
+</manifest>
