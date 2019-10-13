@@ -5,6 +5,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import io.restassured.response.ResponseBody;
+import io.restassured.specification.RequestSpecification;
+import org.json.simple.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,39 +39,74 @@ public class RestTest {
         RestAssured.get("https://mundial2018.000webhostapp.com/getPlayerID.php?name=Satharin").
                 then().
                 assertThat().
-                body("html.body.name", equalTo("Satharin"));
-    }
-
-    @Test
-    public void canGetLuke2(){
-
-        given().
-                param("name", "Satharin").
-                when().
-                    get("https://mundial2018.000webhostapp.com/getPlayerID.php").
-                then().
-                    assertThat().
-                    statusCode(200).
-                    contentType(ContentType.HTML).
-                    log().all();
-
+                contentType(ContentType.HTML).
+                body("html.body.result.name", equalTo("Satharin")).
+                log().all();
 
     }
 
     @Test
-    public void peopleSize(){
+    public void checkHtmlResponse(){
+        RestAssured.baseURI = "https://mundial2018.000webhostapp.com";
+        RequestSpecification httpRequest = RestAssured.given();
+        Response response = httpRequest.get("/getPlayerID.php?name=Satharin");
 
+        // Retrieve the body of the Response
+        ResponseBody body = response.getBody();
+
+        // To check for sub string presence get the Response body as a String.
+        // Do a String.contains
+        String bodyAsString = body.asString();
+        Assert.assertTrue("Response body contains Satharin", bodyAsString.contains("Satharin"));
+    }
+
+    @Test
+    public void checkIfUrlNotFound(){
         given()
+                .param("format", "json")
+                .when()
+                    .get("https://swapi.co/api/people/99/")
+                .then()
+                    .statusCode(404);
+    }
+
+    @Test
+    public void checkIfUrFound(){
+        given()
+                .param("format", "json")
+                .when()
+                .get("https://swapi.co/api/people/01/")
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    public void loginTest() {
+        RestAssured.baseURI = "https://www.example.com";
+        given().urlEncodingEnabled(true)
+                .param("username", "user@site.com")
+                .param("password", "Pas54321")
+                .header("Accept", ContentType.JSON.getAcceptHeader())
+                .post("/login")
+                .then().statusCode(200);
+    }
+
+    @Test
+    public void checkJsonResponse(){
+
+                given()
                     .param("format", "json")
                 .when()
                     .get("https://swapi.co/api/people/")
+
                 .then()
-                    .assertThat()
                     .statusCode(200)
-                    .contentType(ContentType.JSON)
                     .body("results.size()", is(10))
                     .body("results[0].name", equalTo("Luke Skywalker"))
-                    .body("results[0].height", equalTo("172"));
+                    .body("results[0].height", equalTo("172"))
+                    .contentType(ContentType.JSON).and()
+                    .header("Server", "cloudflare")
+                    .log().headers();
 
     }
 
@@ -183,4 +221,3 @@ public class RestTest {
 
 
 }
-
